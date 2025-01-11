@@ -10,14 +10,43 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <vector>
 #include <string>
+#include <fileapi.h>
+#include <winuser.h>
+// for the serial port
+#include <setupapi.h>
+#include <devguid.h>
+#include <list>
+#include <condition_variable>
+#include <fstream>
 
+#pragma comment(lib, "Setupapi.lib")
+
+#define SLIDERS_COUNT 4
+#define KEYS_COUNT 8
+#define PADDING_COUNT 2
+#define INPUT_LEN (SLIDERS_COUNT + KEYS_COUNT + PADDING_COUNT)
+
+#define SIGNAL_THRESHOLD 2
 
 using namespace std;
+
+float prevInputs[SLIDERS_COUNT + KEYS_COUNT + PADDING_COUNT]{};
+float inputs[SLIDERS_COUNT + KEYS_COUNT + PADDING_COUNT]{};
+const vector<unsigned short int> key_maps = { 0xB3, 0xB1, 0xB0, 0xB5, 0x7C, 0x7D, 0x7E, 0x7F};
+
+std::ofstream outfile("output.txt");
+std::streambuf* old_cout_buf = std::cout.rdbuf();
+std::streambuf* old_cerr_buf = std::cerr.rdbuf();
 
 struct AudioDevice {
     wstring name;
     IAudioEndpointVolume* endpointVolume;
 };
+
+void SimulateKeyPress(int vKey) {
+    keybd_event(vKey, 0xbf, 0, 0); // Press the key
+    keybd_event(vKey, 0xbf, KEYEVENTF_KEYUP, 0); // Release the key
+}
 
 vector<AudioDevice> GetAudioSessionOutputs() {
     CoInitialize(nullptr);
@@ -102,105 +131,74 @@ vector<AudioDevice> GetAudioSessionOutputs() {
 	return audioDevices;
 }
 
-void ChangeVolumeForAllDevices(const vector<AudioDevice>& audioDevices) {
-    for (const auto& audioDevice : audioDevices) {
-        if (audioDevice.endpointVolume) {
-            float volumeLevel = 0.0f;
-            HRESULT hr = audioDevice.endpointVolume->GetMasterVolumeLevelScalar(&volumeLevel);
-            if (SUCCEEDED(hr)) {
-                wcout << "Current Volume Level for " << wstring(audioDevice.name) << ": " << volumeLevel * 100 << "%" << endl;
-
-                // Prompt user for new volume level
-                float newVolume;
-                wcout << "Enter new volume level for " << wstring(audioDevice.name) << " (0.0 to 1.0): ";
-                cin >> newVolume;
-
-                // Clamp the volume level between 0.0 and 1.0
-                if (newVolume < 0.0f) newVolume = 0.0f;
-                if (newVolume > 1.0f) newVolume = 1.0f;
-
-                // Set the new volume level
-                hr = audioDevice.endpointVolume->SetMasterVolumeLevelScalar(newVolume, nullptr);
-                if (SUCCEEDED(hr)) {
-                    cout << "Volume changed to: " << newVolume * 100 << "%" << endl;
-                }
-
-                else {
-                    cout << "Failed to set the volume level." << endl;
-                }
-            }
-            else {
-                cout << "Failed to get the current volume level." << endl;
+void applyInputs(const vector<AudioDevice>& audioDevices) {
+    //the inputs 1 to 4 are the volume levels
+    //the inputs 5 to 14 are the multimedia buttons
+    for (int i = 1; i < INPUT_LEN-1; i++) {
+        if (i <= SLIDERS_COUNT) {
+            // if the value is different from the previous one by at least SIGNAL_THRESHOLD
+            if (abs(inputs[i] - prevInputs[i]) > SIGNAL_THRESHOLD) {
+                float volumeLevel = inputs[i] / 1023;
+                if (volumeLevel < 0) volumeLevel = 0.0f;
+                if (volumeLevel > 1) volumeLevel = 1.0f;
+                audioDevices[i - 1].endpointVolume->SetMasterVolumeLevelScalar(volumeLevel, nullptr);
             }
         }
+        else {
+            // keypress is change from 1 to 0
+            if (inputs[i] == 0 && prevInputs[i] == 1) {
+                SimulateKeyPress(key_maps[i - SLIDERS_COUNT - 1]);
+            }
+        }
+        prevInputs[i] = inputs[i];
     }
 }
 
-void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial) {
-    //HRESULT hr = audioDevice.endpointVolume->GetMasterVolumeLevelScalar(&volumeLevel);
-    // Read data from the serial port
-    char buffer[256];
+void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated) {
     DWORD bytesRead;
-    float prevInputs[14]{};
-    while (true) {
+    char buffer[256];
+    std::cout.rdbuf(outfile.rdbuf());
+    std::cerr.rdbuf(outfile.rdbuf());
+
+    std::string lineBuffer;
+
+    while (!shouldStop) {
+        memset(buffer, 0, sizeof(buffer));
         if (ReadFile(hSerial, buffer, sizeof(buffer) - 1, &bytesRead, NULL)) {
+            if (bytesRead > 0) {
+                lineBuffer += std::string(buffer, bytesRead);
 
-            // buffer contains the volume level as a csv string of multiple values
-            // split them by comma into an array of size 12
-            char* token = strtok(buffer, ",");
-            float inputs[14]{};
-            int i = 0;
-            while (i < 14) {
-                inputs[i] = atof(token);
-                token = strtok(NULL, ",");
-                i++;
-            }
-            for (int i = 0; i < 14; i++) {
-                cout << inputs[i] << " ";
-            }
-            cout << endl;
+                size_t startPos = lineBuffer.find("-1,");
+                if (startPos != std::string::npos) {
+                    size_t endPos = lineBuffer.find(",-1");
+                    if (endPos != std::string::npos && endPos > startPos) {
+                        std::string line = lineBuffer.substr(startPos, endPos - startPos + 3);
+                        lineBuffer.erase(startPos, endPos - startPos + 3);
 
+                        // Parse the input line
+                        char* token = strtok((char*)line.c_str(), ",");
+                        int i = 0;
+                        while (i < INPUT_LEN && token != NULL) {
+                            inputs[i] = atof(token);
+                             cout << inputs[i] << " "; // Uncomment for debugging
+                            token = strtok(NULL, ",");
+                            i++;
+                        }
+                         cout << endl; // Uncomment for debugging
 
-            //buffer[bytesRead] = '\0'; // Null-terminate the string
-            //std::cout << "Read from COM5: " << buffer << std::endl;
-            // get the volume level from the serial port that should be between 0 and 1 float
-            //volumeLevel = atof(buffer) / 1023;
-            //cout << "volume level: " << volumeLevel << endl;
-
-            //checking the linear potentiometer values
-            if (inputs[0] == -1 && inputs[13] == -1) {
-                for (int i = 1; i < 5; i++) {
-                    inputs[i] = inputs[i] / 1023;
-                    // Clamp the volume level between 0.0 and 1.0
-                    if (inputs[i] < 0.0f) inputs[i] = 0.0f;
-                    if (inputs[i] > 1.0f) inputs[i] = 1.0f;
-
-                    //changing the respected volume levels
-                    if (abs(inputs[i] - prevInputs[i]) > 0.001) {
-                        // Set the new volume level
-                        HRESULT hr = audioDevices[i - 1].endpointVolume->SetMasterVolumeLevelScalar(inputs[i], nullptr);
+                        applyInputs(audioDevices);
                     }
                 }
             }
-            //cout << endl;
-            //if (SUCCEEDED(hr)) {
-            //	cout << "Volume changed to: " << volumeLevel * 100 << "%" << endl;
-            //}
-            //else {
-            //	cout << "Failed to set the volume level." << endl;
-            //}
-            // sleep 100 ms
-            for (int i = 0; i < 14; i++) {
-                prevInputs[i] = inputs[i];
-            }
-            Sleep(100);
         }
         else {
             std::cerr << "Error reading from COM5" << std::endl;
         }
     }
-    //cout << "setting the volume level to " << volumeLevel << endl;
+
+    threadTerminated.notify_all();
 }
+
 
 HANDLE ConnectToSerial(const WCHAR* com) {
     // Open the serial port
@@ -223,7 +221,7 @@ HANDLE ConnectToSerial(const WCHAR* com) {
         CloseHandle(hSerial);
         return nullptr;
     }
-    dcbSerialParams.BaudRate = CBR_115200; // Set baud rate
+    dcbSerialParams.BaudRate = CBR_57600; // Set baud rate
     dcbSerialParams.ByteSize = 8;         // Data size
     dcbSerialParams.StopBits = ONESTOPBIT; // Stop bits
     dcbSerialParams.Parity = NOPARITY;    // Parity
@@ -244,46 +242,30 @@ HANDLE ConnectToSerial(const WCHAR* com) {
     return hSerial;
 }
 
-int main() {
+std::vector<wstring> getAvailableComPorts() 
+{
+    wchar_t lpTargetPath[5000]; // buffer to store the path of the COM PORTS
+    list<int> portNumbers;
 
-    // Create a vector to store the audio devices
-    vector<AudioDevice> audioDevices;
+    for (int i = 0; i < 255; i++) // checking ports from COM0 to COM255
+    {
+        wstring str = L"COM" + to_wstring(i); // converting to COM0, COM1, COM2
+        DWORD res = QueryDosDevice(str.c_str(), lpTargetPath, 5000);
 
-    // List audio session outputs and store them in the vector
-    audioDevices = GetAudioSessionOutputs();
-
-    // Open the serial port
-    const WCHAR* com = L"\\\\.\\COM5";
-    HANDLE hSerial = ConnectToSerial(com);
-
-    if (hSerial == nullptr) {
-        cerr << "Error connecting to serial port" << endl;
-
-    }
-
-    // create an array of the devices that should be managed by the serial port volume level
-    // prompt user to choose 4 devices and save them in an array
-    // then use the array to change the volume level of the devices
-    vector<AudioDevice> chosenDevices;
-    cout << "Choose 4 devices to manage by the serial port volume level" << endl;
-    for (int i = 0; i < 4; i++) {
-        cout << "Input device number:" << endl;
-        int num;
-        cin >> num;
-        if (num >= 0 && num < audioDevices.size()) {
-            chosenDevices.push_back(audioDevices[num]);
+        // Test the return value and error if any
+        if (res != 0) //QueryDosDevice returns zero if it didn't find an object
+        {
+            portNumbers.push_back(i);
+            //std::cout << str << ": " << lpTargetPath << std::endl;
+        }
+        if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+        {
         }
     }
 
-    mainLoop(chosenDevices, hSerial);
-
-    // Release the endpoint volume interfaces
-    for (auto& audioDevice : audioDevices) {
-        if (audioDevice.endpointVolume) {
-            audioDevice.endpointVolume->Release();
-        }
+    std::vector<wstring> portList;
+    for (auto i : portNumbers) {
+        portList.push_back(L"COM" + to_wstring(i));
     }
-
-    return 0;
+    return portList;
 }
-

@@ -11,6 +11,8 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <vector>
 #include <string>
+#include <fileapi.h>
+#include <condition_variable>
 
 using namespace std;
 
@@ -19,14 +21,12 @@ struct AudioDevice;
 
 // Function prototypes
 vector<AudioDevice> GetAudioSessionOutputs();
-void ChangeVolumeForAllDevices(const vector<AudioDevice>& audioDevices);
-void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial);
+void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated);
 HANDLE ConnectToSerial(const WCHAR* com);
+std::vector <wstring> getAvailableComPorts();
 
 // Struct to store information about an audio device
 struct AudioDevice {
 	wstring name;
 	IAudioEndpointVolume* endpointVolume;
 };
-
-int main();

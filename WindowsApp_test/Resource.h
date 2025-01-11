@@ -20,6 +20,8 @@
 #define IDC_COMBOBOX2                    1002
 #define IDC_COMBOBOX3                    1003
 #define IDC_COMBOBOX4                    1004
+#define IDC_CHOOSE_SERIAL                1066
+#define IDB_CHOOSE_SERIAL_BTN            1067
 #define IDB_CONNECT_SERIAL_BTN           1068
 #define IDB_SAVE_PRESET_BTN 		     1069
 #define IDB_LOAD_PRESET_BTN 		     1070
