@@ -26,7 +26,7 @@
 #define PADDING_COUNT 2
 #define INPUT_LEN (SLIDERS_COUNT + KEYS_COUNT + PADDING_COUNT)
 
-#define SIGNAL_THRESHOLD 2
+#define SIGNAL_THRESHOLD 1
 
 using namespace std;
 
@@ -131,7 +131,7 @@ vector<AudioDevice> GetAudioSessionOutputs() {
 	return audioDevices;
 }
 
-void applyInputs(const vector<AudioDevice>& audioDevices) {
+void applyInputs(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps) {
     //the inputs 1 to 4 are the volume levels
     //the inputs 5 to 14 are the multimedia buttons
     for (int i = 1; i < INPUT_LEN-1; i++) {
@@ -147,58 +147,13 @@ void applyInputs(const vector<AudioDevice>& audioDevices) {
         else {
             // keypress is change from 1 to 0
             if (inputs[i] == 0 && prevInputs[i] == 1) {
-                SimulateKeyPress(key_maps[i - SLIDERS_COUNT - 1]);
+                std::cout << keyMaps[i - SLIDERS_COUNT - 1] << endl;
+                SimulateKeyPress(keyMaps[i - SLIDERS_COUNT - 1]);
             }
         }
         prevInputs[i] = inputs[i];
     }
 }
-
-void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated) {
-    DWORD bytesRead;
-    char buffer[256];
-    std::cout.rdbuf(outfile.rdbuf());
-    std::cerr.rdbuf(outfile.rdbuf());
-
-    std::string lineBuffer;
-
-    while (!shouldStop) {
-        memset(buffer, 0, sizeof(buffer));
-        if (ReadFile(hSerial, buffer, sizeof(buffer) - 1, &bytesRead, NULL)) {
-            if (bytesRead > 0) {
-                lineBuffer += std::string(buffer, bytesRead);
-
-                size_t startPos = lineBuffer.find("-1,");
-                if (startPos != std::string::npos) {
-                    size_t endPos = lineBuffer.find(",-1");
-                    if (endPos != std::string::npos && endPos > startPos) {
-                        std::string line = lineBuffer.substr(startPos, endPos - startPos + 3);
-                        lineBuffer.erase(startPos, endPos - startPos + 3);
-
-                        // Parse the input line
-                        char* token = strtok((char*)line.c_str(), ",");
-                        int i = 0;
-                        while (i < INPUT_LEN && token != NULL) {
-                            inputs[i] = atof(token);
-                             cout << inputs[i] << " "; // Uncomment for debugging
-                            token = strtok(NULL, ",");
-                            i++;
-                        }
-                         cout << endl; // Uncomment for debugging
-
-                        applyInputs(audioDevices);
-                    }
-                }
-            }
-        }
-        else {
-            std::cerr << "Error reading from COM5" << std::endl;
-        }
-    }
-
-    threadTerminated.notify_all();
-}
-
 
 HANDLE ConnectToSerial(const WCHAR* com) {
     // Open the serial port
@@ -210,7 +165,7 @@ HANDLE ConnectToSerial(const WCHAR* com) {
         FILE_ATTRIBUTE_NORMAL,
         NULL);
     if (hSerial == INVALID_HANDLE_VALUE) {
-        std::cerr << "Error opening COM5" << std::endl;
+        std::wcerr << L"Error opening " << com <<std::endl;
         return nullptr;
     }
     // Set the serial port parameters
@@ -240,6 +195,67 @@ HANDLE ConnectToSerial(const WCHAR* com) {
     SetCommTimeouts(hSerial, &timeouts);
 
     return hSerial;
+}
+
+void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated) {
+    DWORD bytesRead;
+    char buffer[256];
+    std::cout.rdbuf(outfile.rdbuf());
+    std::cerr.rdbuf(outfile.rdbuf());
+    HANDLE hSerial = ConnectToSerial(com);
+    bool connected = hSerial != nullptr;
+
+    std::string lineBuffer;
+
+    while (!shouldStop) {
+        if (connected && ReadFile(hSerial, buffer, sizeof(buffer) - 1, &bytesRead, NULL)) {
+            if (bytesRead > 0) {
+                // if lineBuffer is too long, clear it
+                if (lineBuffer.length() > 256) {
+                    lineBuffer.clear();
+                }
+                lineBuffer += std::string(buffer, bytesRead);
+
+                size_t startPos = lineBuffer.find("-1,");
+                if (startPos != std::string::npos) {
+                    size_t endPos = lineBuffer.find(",-1");
+                    if (endPos != std::string::npos && endPos > startPos) {
+                        std::string line = lineBuffer.substr(startPos, endPos - startPos + 3);
+                        lineBuffer.erase(startPos, endPos - startPos + 3);
+
+                        // Parse the input line
+                        char* token = strtok((char*)line.c_str(), ",");
+                        int i = 0;
+                        while (i < INPUT_LEN && token != NULL) {
+                            inputs[i] = atof(token);
+                            //cout << inputs[i] << " "; // Uncomment for debugging
+                            token = strtok(NULL, ",");
+                            i++;
+                        }
+                        //cout << endl; // Uncomment for debugging
+
+                        applyInputs(audioDevices, keyMaps);
+                    }
+                }
+            }
+        }
+        else {
+            std::cerr << "Trying to reconnect to serial." << endl;
+			connected = false;
+            while (!shouldStop && !connected) {
+                hSerial = ConnectToSerial(com);
+                connected = hSerial != nullptr;
+                if (connected) {
+                    std::cerr << "Reconnected to serial." << endl;
+                }
+                else {
+                    // sleep for 5 seconds
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
+                }
+            }
+        }
+        threadTerminated.notify_all();
+    }
 }
 
 std::vector<wstring> getAvailableComPorts() 

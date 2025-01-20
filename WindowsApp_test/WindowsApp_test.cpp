@@ -33,13 +33,22 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // *** INSERT GLOBAL VARIABLES HERE ***
-HWND comboBoxHandle1;
-HWND comboBoxHandle2;
-HWND comboBoxHandle3;
-HWND comboBoxHandle4;
+HWND slider1ChoiceBox;
+HWND slider2ChoiceBox;
+HWND slider3ChoiceBox;
+HWND slider4ChoiceBox;
 HWND comboBoxChooseComHandle;
 
-HWND buttonHandle;
+HWND comboBoxBtnPreset1;
+HWND comboBoxBtnPreset2;
+HWND comboBoxBtnPreset3;
+HWND comboBoxBtnPreset4;
+HWND comboBoxBtnPreset5;
+HWND comboBoxBtnPreset6;
+HWND comboBoxBtnPreset7;
+HWND comboBoxBtnPreset8;
+
+HWND updateDevicesButton;
 HWND savePresetButtonHandle;
 HWND connectSerialButtonHandle;
 HWND loadPresetButtonHandle;
@@ -49,7 +58,8 @@ HWND loadPresetButtonHandle;
 vector<AudioDevice> audioDevices = GetAudioSessionOutputs();
 wstring com;
 HANDLE hSerial;
-vector<AudioDevice> chosenDevices{ 4 };
+vector<AudioDevice> chosenDevices(4);
+vector<unsigned short int> keyMaps(8);
 std::vector <wstring> comPorts;
 std::thread workerThread;
 std::atomic<bool> shouldStop(false);
@@ -57,6 +67,42 @@ std::condition_variable threadTerminated;
 std::mutex mtx;
 std::unique_lock<std::mutex> threadTerminationLock(mtx);
 
+struct MultimediaButton {
+    std::wstring name;
+    unsigned short int keyCode;
+
+    MultimediaButton(const std::wstring& name, unsigned short int keyCode)
+        : name(name), keyCode(keyCode) {
+    }
+
+    static MultimediaButton get(unsigned short int keyCode, vector <MultimediaButton> buttonMaps) {
+        for (int i = 0; i < buttonMaps.size(); i++) {
+            if (buttonMaps[i].keyCode == keyCode) {
+                return buttonMaps[i];
+            }
+        }
+    }
+};
+
+std::vector<MultimediaButton> buttonMaps = {
+            MultimediaButton(L"F13", 0x7C),
+            MultimediaButton(L"F14", 0x7D),
+            MultimediaButton(L"F15", 0x7E),
+            MultimediaButton(L"F16", 0x7F),
+            MultimediaButton(L"F17", 0x80),
+            MultimediaButton(L"F18", 0x81),
+            MultimediaButton(L"F19", 0x82),
+            MultimediaButton(L"F20", 0x83),
+            MultimediaButton(L"Play/pause", 0xB3),
+            MultimediaButton(L"Next track", 0xB0),
+            MultimediaButton(L"Previous track", 0xB1),
+            MultimediaButton(L"Stop media", 0xB2),
+            MultimediaButton(L"Select media", 0xB5),
+            MultimediaButton(L"NUM LOCK", 0x90),
+            MultimediaButton(L"SCROLL LOCK", 0x91),
+            MultimediaButton(L"Browser back", 0xA6),
+            MultimediaButton(L"Browser forward", 0xA7)
+};
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -125,17 +171,68 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 static void UpdateDropDowns(HWND hWnd) {
-	SendMessage(comboBoxHandle1, CB_RESETCONTENT, 0, 0);
-	SendMessage(comboBoxHandle2, CB_RESETCONTENT, 0, 0);
-	SendMessage(comboBoxHandle3, CB_RESETCONTENT, 0, 0);
-	SendMessage(comboBoxHandle4, CB_RESETCONTENT, 0, 0);
+	SendMessage(slider1ChoiceBox, CB_RESETCONTENT, 0, 0);
+	SendMessage(slider2ChoiceBox, CB_RESETCONTENT, 0, 0);
+	SendMessage(slider3ChoiceBox, CB_RESETCONTENT, 0, 0);
+	SendMessage(slider4ChoiceBox, CB_RESETCONTENT, 0, 0);
 
 	for (int i = 0; i < audioDevices.size(); i++) {
-		SendMessage(comboBoxHandle1, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-		SendMessage(comboBoxHandle2, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-		SendMessage(comboBoxHandle3, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-		SendMessage(comboBoxHandle4, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+		SendMessage(slider1ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+		SendMessage(slider2ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+		SendMessage(slider3ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+		SendMessage(slider4ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
 	}
+}
+
+static void UpdateButtonMapsLists(HWND hWnd) {
+    for (int i = 0; i < buttonMaps.size(); i++) {
+        SendMessage(comboBoxBtnPreset1, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset2, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset3, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset4, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset5, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset6, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset7, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+        SendMessage(comboBoxBtnPreset8, CB_ADDSTRING, 0, (LPARAM)buttonMaps[i].name.c_str());
+    }
+}
+
+void loadPreset(HWND hWnd) {
+    Configuration config = readFromJson();
+    if (config.isValid) {
+        chosenDevices.clear();
+        for (int i = 0; i < config.sliders.size(); i++) {
+            for (int j = 0; j < audioDevices.size(); j++) {
+                if (config.sliders[i] == wstring_to_string(audioDevices[j].name)) {
+                    chosenDevices.push_back(audioDevices[j]);
+                }
+            }
+        }
+
+        SendMessage(comboBoxChooseComHandle, CB_SELECTSTRING, -1, (LPARAM)config.com_port.c_str());
+        SendMessage(slider1ChoiceBox, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[0].name.c_str());
+        SendMessage(slider2ChoiceBox, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[1].name.c_str());
+        SendMessage(slider3ChoiceBox, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[2].name.c_str());
+        SendMessage(slider4ChoiceBox, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[3].name.c_str());
+
+        com = config.com_port;
+
+        keyMaps.clear();
+        for (int i = 0; i < config.buttons.size(); i++) {
+            keyMaps.push_back(config.buttons[i]);
+        }
+		SendMessageW(comboBoxBtnPreset7, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[0], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset5, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[1], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset3, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[2], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset1, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[3], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset8, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[4], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset6, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[5], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset4, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[6], buttonMaps).name.c_str());
+		SendMessageW(comboBoxBtnPreset2, CB_SELECTSTRING, -1, (LPARAM)MultimediaButton::get(keyMaps[7], buttonMaps).name.c_str());
+    }
+    else {
+		MessageBox(hWnd, L"Invalid JSON file", L"Error", MB_OK);
+    }
 }
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
@@ -151,56 +248,93 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    // *** INSERT BUTTON AND COMBO BOX CREATION HERE ***
-   buttonHandle = CreateWindowEx(
+   updateDevicesButton = CreateWindowEx(
        0, L"BUTTON", L"Update audio devices", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-       10, 100, 150, 50, hWnd, (HMENU)IDB_BUTTON, hInstance, NULL);
+       10, 40, 150, 50, hWnd, (HMENU)IDB_BUTTON, hInstance, NULL);
 
    savePresetButtonHandle = CreateWindowEx(
        0, L"BUTTON", L"Save preset", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-       10, 500, 150, 50, hWnd, (HMENU)IDB_SAVE_PRESET_BTN, hInstance, NULL);
+       170, 40, 150, 50, hWnd, (HMENU)IDB_SAVE_PRESET_BTN, hInstance, NULL);
 
    loadPresetButtonHandle = CreateWindowEx(
        0, L"BUTTON", L"Load preset", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-       170, 500, 150, 50, hWnd, (HMENU)IDB_LOAD_PRESET_BTN, hInstance, NULL);
+       330, 40, 150, 50, hWnd, (HMENU)IDB_LOAD_PRESET_BTN, hInstance, NULL);
 
    connectSerialButtonHandle = CreateWindowEx(
 	   0, L"BUTTON", L"Connect to serial", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-	   330, 500, 150, 50, hWnd, (HMENU)IDB_CONNECT_SERIAL_BTN, hInstance, NULL);
+	   490, 40, 150, 50, hWnd, (HMENU)IDB_CONNECT_SERIAL_BTN, hInstance, NULL);
 
-   if (!buttonHandle || !savePresetButtonHandle || !connectSerialButtonHandle) {
+   if (!updateDevicesButton || !savePresetButtonHandle || !connectSerialButtonHandle) {
        return FALSE;
    }
 
-   comboBoxHandle1 = CreateWindowEx(
-       0, WC_COMBOBOX, L"slider1", CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-       10, 160, 200, 200, hWnd, (HMENU)IDC_COMBOBOX1, hInstance, NULL);
+   // slider binding boxes
+   slider1ChoiceBox = CreateWindowEx(
+       0, WC_COMBOBOX, L"slider1", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       10, 10, 250, 200, hWnd, (HMENU)IDC_COMBOBOX1, hInstance, NULL);
 
-   comboBoxHandle2 = CreateWindowEx(
-       0, WC_COMBOBOX, L"slider2", CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-       260, 160, 200, 200, hWnd, (HMENU)IDC_COMBOBOX2, hInstance, NULL);
+   slider2ChoiceBox = CreateWindowEx(
+       0, WC_COMBOBOX, L"slider2", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       270, 10, 250, 200, hWnd, (HMENU)IDC_COMBOBOX2, hInstance, NULL);
 
-   comboBoxHandle3 = CreateWindowEx(
-       0, WC_COMBOBOX, L"slider3", CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-       510, 160, 200, 200, hWnd, (HMENU)IDC_COMBOBOX3, hInstance, NULL);
+   slider3ChoiceBox = CreateWindowEx(
+       0, WC_COMBOBOX, L"slider3", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       530, 10, 250, 200, hWnd, (HMENU)IDC_COMBOBOX3, hInstance, NULL);
 
-   comboBoxHandle4 = CreateWindowEx(
-       0, WC_COMBOBOX, L"slider4", CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-       760, 160, 200, 200, hWnd, (HMENU)IDC_COMBOBOX4, hInstance, NULL);
+   slider4ChoiceBox = CreateWindowEx(
+       0, WC_COMBOBOX, L"slider4", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       790, 10, 250, 200, hWnd, (HMENU)IDC_COMBOBOX4, hInstance, NULL);
 
+   // com port choice box
    comboBoxChooseComHandle = CreateWindowEx(
-	   0, WC_COMBOBOX, L"com port", CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-	   10, 0, 200, 200, hWnd, (HMENU)IDC_CHOOSE_SERIAL, hInstance, NULL);
+	   0, WC_COMBOBOX, L"com port", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+	   1050, 10, 70, 200, hWnd, (HMENU)IDC_CHOOSE_SERIAL, hInstance, NULL);
 
-   if (!comboBoxHandle1 or !comboBoxHandle2 or !comboBoxHandle3 or !comboBoxHandle4) {
+   // button binding boxes
+   comboBoxBtnPreset1 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button4", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1050, 50, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX1, hInstance, NULL);
+
+   comboBoxBtnPreset2 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button8", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1160, 50, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX2, hInstance, NULL);
+
+   comboBoxBtnPreset3 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button3", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1050, 100, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX3, hInstance, NULL);
+
+   comboBoxBtnPreset4 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button7", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1160, 100, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX4, hInstance, NULL);
+
+   comboBoxBtnPreset5 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button2", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1050, 150, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX5, hInstance, NULL);
+
+   comboBoxBtnPreset6 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button6", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1160, 150, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX6, hInstance, NULL);
+
+   comboBoxBtnPreset7 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button1", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1050, 200, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX7, hInstance, NULL);
+
+   comboBoxBtnPreset8 = CreateWindowEx(
+       0, WC_COMBOBOX, L"Button5", WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | WS_VSCROLL,
+       1160, 200, 100, 200, hWnd, (HMENU)IDC_BUTTONBOX8, hInstance, NULL);
+
+   if (!slider1ChoiceBox or !slider2ChoiceBox or !slider3ChoiceBox or !slider4ChoiceBox) {
        return FALSE;
    }
 
    for (int i = 0; i < audioDevices.size(); i++) {
-	   SendMessage(comboBoxHandle1, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-	   SendMessage(comboBoxHandle2, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-	   SendMessage(comboBoxHandle3, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
-	   SendMessage(comboBoxHandle4, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+	   SendMessage(slider1ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+	   SendMessage(slider2ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+	   SendMessage(slider3ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
+	   SendMessage(slider4ChoiceBox, CB_ADDSTRING, 0, (LPARAM)audioDevices[i].name.c_str());
    }
+
+   UpdateButtonMapsLists(hWnd);
 
    comPorts = getAvailableComPorts();
    SendDlgItemMessage(hWnd, IDC_CHOOSE_SERIAL, CB_ADDSTRING, 0, (LPARAM)L"Choose COM port");
@@ -208,9 +342,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	   SendDlgItemMessage(hWnd, IDC_CHOOSE_SERIAL, CB_ADDSTRING, 0, (LPARAM)comPorts[i].c_str());
    }
 
-   //SendMessage(comboBoxHandle1, CB_ADDSTRING, 0, (LPARAM)L"Item 1");
-   //SendMessage(comboBoxHandle1, CB_ADDSTRING, 0, (LPARAM)L"Item 2");
-   //SendMessage(comboBoxHandle1, CB_ADDSTRING, 0, (LPARAM)L"Item 3");
+   loadPreset(hWnd);
+
+   //SendMessage(slider1ChoiceBox, CB_ADDSTRING, 0, (LPARAM)L"Item 1");
+   //SendMessage(slider1ChoiceBox, CB_ADDSTRING, 0, (LPARAM)L"Item 2");
+   //SendMessage(slider1ChoiceBox, CB_ADDSTRING, 0, (LPARAM)L"Item 3");
 
    // *** END OF INSERTION ***
 
@@ -219,6 +355,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    return TRUE;
 }
+
+
 
 // ...
 
@@ -252,63 +390,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case IDB_BUTTON:
             if (wmEvent == BN_CLICKED) {
-                MessageBox(hWnd, L"Devices Updated!", L"Info", MB_OK);
                 audioDevices = GetAudioSessionOutputs();
                 UpdateDropDowns(hWnd);
             }
             break;
         case IDB_SAVE_PRESET_BTN:
             if (wmEvent == BN_CLICKED) {
-                MessageBox(hWnd, L"Preset Saved!", L"Info", MB_OK);
                 std::vector<std::string> devices;
                 for (int i = 0; i < chosenDevices.size(); i++) {
                     devices.push_back(wstring_to_string(chosenDevices[i].name));
                         //mainLoop(chosenDevices, hSerial);
                 }
-                writeToJson(devices, com);
+                writeToJson(devices, com, keyMaps);
             }
             break;
         case IDB_LOAD_PRESET_BTN:
             if (wmEvent == BN_CLICKED) {
-                MessageBox(hWnd, L"Preset Loaded!", L"Info", MB_OK);
-                Configuration config = readFromJson();
-                chosenDevices.clear();
-                for (int i = 0; i < config.sliders.size(); i++) {
-                    for (int j = 0; j < audioDevices.size(); j++) {
-                        if (config.sliders[i] == wstring_to_string(audioDevices[j].name)) {
-                            chosenDevices.push_back(audioDevices[j]);
-                        }
-                    }
-                }
-				com = config.com_port;
-                SendMessage(comboBoxChooseComHandle, CB_SELECTSTRING, -1, (LPARAM)config.com_port.c_str());
-                SendMessage(comboBoxHandle1, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[0].name.c_str());
-                SendMessage(comboBoxHandle2, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[1].name.c_str());
-                SendMessage(comboBoxHandle3, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[2].name.c_str());
-                SendMessage(comboBoxHandle4, CB_SELECTSTRING, -1, (LPARAM)chosenDevices[3].name.c_str());
+				loadPreset(hWnd);
                 //mainLoop(chosenDevices, hSerial);
             }
             break;
         case IDB_CONNECT_SERIAL_BTN:
             if (wmEvent == BN_CLICKED) {
-
-                hSerial = ConnectToSerial(com.c_str());
-
-                if (hSerial != nullptr) {
-                    MessageBox(hWnd, L"connected", L"Info", MB_OK);
-                    workerThread = std::thread(mainLoop, std::ref(chosenDevices), hSerial, std::ref(shouldStop), std::ref(threadTerminated));
-                }
-                else {
-                    MessageBox(hWnd, com.c_str(), L"Error", MB_OK);
-                }
+                    workerThread = std::thread(mainLoop, std::ref(chosenDevices), std::ref(keyMaps), com.c_str(), std::ref(shouldStop), std::ref(threadTerminated));
             }
             break;
         case IDC_COMBOBOX1:
             if (wmEvent == CBN_SELCHANGE) {
-                int selectedIndex = SendMessage(comboBoxHandle1, CB_GETCURSEL, 0, 0);
+                int selectedIndex = SendMessage(slider1ChoiceBox, CB_GETCURSEL, 0, 0);
                 if (selectedIndex != CB_ERR) {
                     wchar_t selectedText[256];
-                    SendMessage(comboBoxHandle1, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
+                    SendMessage(slider1ChoiceBox, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
                     chosenDevices[0] = (audioDevices[selectedIndex]);
                     //MessageBox(hWnd, selectedText, audioDevices[selectedIndex].name.c_str(), MB_OK);
                 }
@@ -316,10 +428,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case IDC_COMBOBOX2:
             if (wmEvent == CBN_SELCHANGE) {
-                int selectedIndex = SendMessage(comboBoxHandle2, CB_GETCURSEL, 0, 0);
+                int selectedIndex = SendMessage(slider2ChoiceBox, CB_GETCURSEL, 0, 0);
                 if (selectedIndex != CB_ERR) {
                     wchar_t selectedText[256];
-                    SendMessage(comboBoxHandle2, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
+                    SendMessage(slider2ChoiceBox, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
                     chosenDevices[1] = (audioDevices[selectedIndex]);
                     //MessageBox(hWnd, selectedText, audioDevices[selectedIndex].name.c_str(), MB_OK);
                 }
@@ -327,10 +439,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case IDC_COMBOBOX3:
             if (wmEvent == CBN_SELCHANGE) {
-                int selectedIndex = SendMessage(comboBoxHandle3, CB_GETCURSEL, 0, 0);
+                int selectedIndex = SendMessage(slider3ChoiceBox, CB_GETCURSEL, 0, 0);
                 if (selectedIndex != CB_ERR) {
                     wchar_t selectedText[256];
-                    SendMessage(comboBoxHandle3, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
+                    SendMessage(slider3ChoiceBox, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
                     chosenDevices[2] = (audioDevices[selectedIndex]);
                     //MessageBox(hWnd, selectedText, audioDevices[selectedIndex].name.c_str(), MB_OK);
                 }
@@ -338,10 +450,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case IDC_COMBOBOX4:
             if (wmEvent == CBN_SELCHANGE) {
-                int selectedIndex = SendMessage(comboBoxHandle4, CB_GETCURSEL, 0, 0);
+                int selectedIndex = SendMessage(slider4ChoiceBox, CB_GETCURSEL, 0, 0);
                 if (selectedIndex != CB_ERR) {
                     wchar_t selectedText[256];
-                    SendMessage(comboBoxHandle4, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
+                    SendMessage(slider4ChoiceBox, CB_GETLBTEXT, selectedIndex, (LPARAM)selectedText);
                     chosenDevices[3] = (audioDevices[selectedIndex]);
                     //MessageBox(hWnd, selectedText, audioDevices[selectedIndex].name.c_str(), MB_OK);
                 }
@@ -358,6 +470,70 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
             }
             break;
+        case IDC_BUTTONBOX1:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset1, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[3] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+            break;
+		case IDC_BUTTONBOX2:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset2, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[7] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX3:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset3, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[2] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX4:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset4, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[6] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX5:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset5, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[1] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX6:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset6, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[5] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX7:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset7, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[0] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
+		case IDC_BUTTONBOX8:
+			if (wmEvent == CBN_SELCHANGE) {
+				int selectedIndex = SendMessage(comboBoxBtnPreset8, CB_GETCURSEL, 0, 0);
+				if (selectedIndex != CB_ERR) {
+					keyMaps[4] = buttonMaps[selectedIndex].keyCode;
+				}
+			}
+			break;
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
             }

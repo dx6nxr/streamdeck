@@ -1,11 +1,21 @@
 {
+    "buttons": {
+        "button1": 179,
+        "button2": 176,
+        "button3": 177,
+        "button4": 181,
+        "button5": 124,
+        "button6": 125,
+        "button7": 126,
+        "button8": 127
+    },
     "com_port": [
         67,
         79,
         77,
-        53
+        56
     ],
-    "slider": {
+    "sliders": {
         "slider1": "SteelSeries Sonar - Media (SteelSeries Sonar Virtual Audio Device)",
         "slider2": "SteelSeries Sonar - Gaming (SteelSeries Sonar Virtual Audio Device)",
         "slider3": "SteelSeries Sonar - Chat (SteelSeries Sonar Virtual Audio Device)",

@@ -16,11 +16,23 @@
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
 #define IDB_BUTTON                      1000
+//slider boxes
 #define IDC_COMBOBOX1                    1001
 #define IDC_COMBOBOX2                    1002
 #define IDC_COMBOBOX3                    1003
 #define IDC_COMBOBOX4                    1004
+//button boxes
+#define IDC_BUTTONBOX1                   1005
+#define IDC_BUTTONBOX2                   1006
+#define IDC_BUTTONBOX3                   1007
+#define IDC_BUTTONBOX4                   1008
+#define IDC_BUTTONBOX5                   1009
+#define IDC_BUTTONBOX6                   1010
+#define IDC_BUTTONBOX7                   1011
+#define IDC_BUTTONBOX8                   1012
+
 #define IDC_CHOOSE_SERIAL                1066
+//buttons
 #define IDB_CHOOSE_SERIAL_BTN            1067
 #define IDB_CONNECT_SERIAL_BTN           1068
 #define IDB_SAVE_PRESET_BTN 		     1069

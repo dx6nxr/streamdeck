@@ -21,7 +21,7 @@ struct AudioDevice;
 
 // Function prototypes
 vector<AudioDevice> GetAudioSessionOutputs();
-void mainLoop(const vector<AudioDevice>& audioDevices, HANDLE hSerial, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated);
+void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated);
 HANDLE ConnectToSerial(const WCHAR* com);
 std::vector <wstring> getAvailableComPorts();
 
