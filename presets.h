@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 struct Configuration {
     std::wstring com_port;
+    int num_sliders;
+    int num_btns;
     std::vector<std::string> sliders;
     std::vector<unsigned short int> buttons;
     bool isValid = false;
@@ -11,7 +14,7 @@ struct Configuration {
 
 // Forward declaration of json (if you don't want to include json.hpp in the header)
 namespace nlohmann {
-    class json;
+class json;
 }
 
 // Function prototypes

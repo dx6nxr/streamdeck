@@ -1,3 +1,5 @@
+#include <atomic>
+#include <thread>
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <mmdeviceapi.h>
@@ -7,6 +9,7 @@
 #include <comdef.h>
 #include <propkey.h>
 #include <propvarutil.h>
+#include <initguid.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #include <vector>
 #include <string>
@@ -15,7 +18,7 @@
 // for the serial port
 #include <setupapi.h>
 #include <devguid.h>
-#include <list>
+#include <QStringList>
 #include <condition_variable>
 #include <fstream>
 
@@ -38,6 +41,17 @@ std::ofstream outfile("output.txt");
 std::streambuf* old_cout_buf = std::cout.rdbuf();
 std::streambuf* old_cerr_buf = std::cerr.rdbuf();
 
+struct MultimediaButton {
+    QString name;
+    unsigned short int keyCode;
+
+    //constructor
+    MultimediaButton(QString name, unsigned short int keyCode) {
+        this->name = name;
+        this->keyCode = keyCode;
+    }
+};
+
 struct AudioDevice {
     wstring name;
     IAudioEndpointVolume* endpointVolume;
@@ -46,6 +60,15 @@ struct AudioDevice {
 void SimulateKeyPress(int vKey) {
     keybd_event(vKey, 0xbf, 0, 0); // Press the key
     keybd_event(vKey, 0xbf, KEYEVENTF_KEYUP, 0); // Release the key
+}
+
+QString getName(unsigned short int keyCode, vector<MultimediaButton> keys) {
+    for (const auto& key : keys) {
+        if (key.keyCode == keyCode) {
+            return key.name;
+        }
+    }
+    return NULL;
 }
 
 vector<AudioDevice> GetAudioSessionOutputs() {
@@ -59,7 +82,7 @@ vector<AudioDevice> GetAudioSessionOutputs() {
         CLSCTX_INPROC_SERVER,
         __uuidof(IMMDeviceEnumerator),
         (void**)&deviceEnumerator
-    );
+        );
 
     if (SUCCEEDED(hr)) {
         IMMDeviceCollection* deviceCollection = nullptr;
@@ -96,7 +119,7 @@ vector<AudioDevice> GetAudioSessionOutputs() {
                                 CLSCTX_INPROC_SERVER,
                                 nullptr,
                                 (void**)&audioDevice.endpointVolume
-                            );
+                                );
 
                             if (SUCCEEDED(hr)) {
                                 audioDevices.push_back(audioDevice); // Add to the list
@@ -128,7 +151,7 @@ vector<AudioDevice> GetAudioSessionOutputs() {
     }
 
     CoUninitialize();
-	return audioDevices;
+    return audioDevices;
 }
 
 void applyInputs(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps) {
@@ -158,12 +181,12 @@ void applyInputs(const vector<AudioDevice>& audioDevices, vector<unsigned short 
 HANDLE ConnectToSerial(const WCHAR* com) {
     // Open the serial port
     HANDLE hSerial = CreateFile(com,
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
+                                GENERIC_READ | GENERIC_WRITE,
+                                0,
+                                NULL,
+                                OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL,
+                                NULL);
     if (hSerial == INVALID_HANDLE_VALUE) {
         std::wcerr << L"Error opening " << com <<std::endl;
         return nullptr;
@@ -240,13 +263,18 @@ void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int
             }
         }
         else {
-            std::cerr << "Trying to reconnect to serial." << endl;
-			connected = false;
+            std::cout << "Trying to reconnect to serial." << endl;
+            connected = false;
             while (!shouldStop && !connected) {
+                // disconnect from serial if it is connected
+                if (hSerial != nullptr) {
+                    CloseHandle(hSerial);
+                    hSerial = nullptr;
+                }
                 hSerial = ConnectToSerial(com);
                 connected = hSerial != nullptr;
                 if (connected) {
-                    std::cerr << "Reconnected to serial." << endl;
+                    std::cout << "Reconnected to serial." << endl;
                 }
                 else {
                     // sleep for 5 seconds
@@ -258,30 +286,18 @@ void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int
     }
 }
 
-std::vector<wstring> getAvailableComPorts() 
-{
-    wchar_t lpTargetPath[5000]; // buffer to store the path of the COM PORTS
-    list<int> portNumbers;
-
-    for (int i = 0; i < 255; i++) // checking ports from COM0 to COM255
-    {
-        wstring str = L"COM" + to_wstring(i); // converting to COM0, COM1, COM2
-        DWORD res = QueryDosDevice(str.c_str(), lpTargetPath, 5000);
-
-        // Test the return value and error if any
-        if (res != 0) //QueryDosDevice returns zero if it didn't find an object
-        {
-            portNumbers.push_back(i);
-            //std::cout << str << ": " << lpTargetPath << std::endl;
+QStringList getAvailableComPortsQt() {
+    QStringList portList;
+    for (int i = 0; i < 255; i++) {
+        QString portName = QString("COM%1").arg(i);
+        wchar_t lpTargetPath[5000];
+        DWORD res = QueryDosDevice(reinterpret_cast<const wchar_t*>(portName.utf16()), lpTargetPath, 5000);
+        if (res != 0) {
+            portList << portName;
         }
-        if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-        {
+        if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+            // Handle the error (e.g., log a message)
         }
-    }
-
-    std::vector<wstring> portList;
-    for (auto i : portNumbers) {
-        portList.push_back(L"COM" + to_wstring(i));
     }
     return portList;
 }
