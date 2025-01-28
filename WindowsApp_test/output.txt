@@ -1,4 +1,0 @@
-Trying to reconnect to serial.
-Reconnected to serial.
-179
-179
