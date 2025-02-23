@@ -2,21 +2,23 @@
 
 #include <string>
 #include <vector>
+#include "backend.h"
 
 struct Configuration {
     std::wstring com_port;
     int num_sliders;
     int num_btns;
     std::vector<std::string> sliders;
-    std::vector<unsigned short int> buttons;
+    std::vector<MultimediaButton> bindings;
     bool isValid = false;
 };
 
-// Forward declaration of json (if you don't want to include json.hpp in the header)
-namespace nlohmann {
-class json;
-}
-
 // Function prototypes
-bool writeToJson(const std::vector<std::string> sliders, std::wstring com_port, std::vector<unsigned short int> keyMaps);
-Configuration readFromJson();
+bool writeToJson(const std::vector <AudioDevice>& sliders,
+                 const std::wstring& com_port,
+                 const std::vector<MultimediaButton>& bindings,
+                 const std::string& filename = "config.json");
+Configuration readFromJson(const std::string& filename = "config.json");
+
+bool saveKeyBinds(vector<MultimediaButton> buttons, const std::string& filename = "binds.json");
+vector<MultimediaButton> loadKeyBinds(const std::string& filename = "binds.json");

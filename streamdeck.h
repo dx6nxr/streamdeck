@@ -16,6 +16,9 @@
 #include "backend.h"
 #include <qthread.h>
 
+void showDisconnectedMessage();
+void showConnectedMessage();
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class streamdeck;
@@ -49,6 +52,8 @@ private slots: // Qt slots for handling events
     void on_connectSerialBtn_clicked();
 
     void on_comPortComboBox_editTextChanged(const QString &arg1);
+
+    void on_addBinding_clicked();
 
 private:
     Ui::streamdeck *ui;

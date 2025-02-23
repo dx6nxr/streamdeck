@@ -12,32 +12,31 @@
 #include <qcontainerfwd.h>
 #include <qobject.h>
 #include <vector>
-#include <string>
 #include <fileapi.h>
 #include <condition_variable>
 
 using namespace std;
 
 // Forward declaration for struct AudioDevice
-struct AudioDevice {
-    wstring name;
-    IAudioEndpointVolume* endpointVolume;
-};
-
 struct MultimediaButton {
     QString name;
-    unsigned short int keyCode;
+    std::vector<int> keyCodes; // Jetzt ein Vektor von Tastencodes
 
-    MultimediaButton(QString name, unsigned short int keyCode) {
-        this->name = name;
-        this->keyCode = keyCode;
-    }
+    // Konstruktor, der einen einzelnen KeyCode oder eine Liste von KeyCodes akzeptiert
+    MultimediaButton(QString name, int keyCode) : name(name), keyCodes({keyCode}) {}
+    MultimediaButton(QString name, const std::vector<int>& keyCodes) : name(name), keyCodes(keyCodes) {}
+
+    MultimediaButton(): name(""), keyCodes({}) {} // Standardkonstruktor
+};
+
+struct AudioDevice {
+    QString name;
+    IAudioEndpointVolume* endpointVolume;
 };
 
 // Function prototypes
 vector<AudioDevice> GetAudioSessionOutputs();
-QString getName(unsigned short int keyCode, vector<MultimediaButton> keys);
-void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated);
+void mainLoop(const vector<AudioDevice>& audioDevices, vector<MultimediaButton>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated);
 HANDLE ConnectToSerial(const WCHAR* com);
 QStringList getAvailableComPortsQt();
 

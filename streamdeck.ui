@@ -23,13 +23,13 @@
    <locale language="English" country="Germany"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>10</y>
       <width>741</width>
-      <height>501</height>
+      <height>471</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -47,7 +47,7 @@
           <x>0</x>
           <y>20</y>
           <width>371</width>
-          <height>481</height>
+          <height>461</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="slidersGridLayout">
@@ -78,7 +78,7 @@
           <x>-1</x>
           <y>19</y>
           <width>371</width>
-          <height>481</height>
+          <height>461</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="buttonsGridLayout">
@@ -96,11 +96,53 @@
          </property>
         </layout>
        </widget>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>20</y>
+          <width>351</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLineEdit" name="NewButtonBindingName">
+           <property name="accessibleDescription">
+            <string/>
+           </property>
+           <property name="inputMask">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string comment="name" extracomment="name">Enter name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QKeySequenceEdit" name="NewButtonBindingSequence">
+           <property name="clearButtonEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="maximumSequenceLength">
+            <longLong>1</longLong>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addBinding">
+           <property name="text">
+            <string>Add combo</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>

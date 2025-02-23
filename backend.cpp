@@ -1,4 +1,5 @@
 #include <atomic>
+#include <qmessagebox.h>
 #include <thread>
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -21,6 +22,8 @@
 #include <QStringList>
 #include <condition_variable>
 #include <fstream>
+// other parts of the app
+#include "backend.h"
 
 #pragma comment(lib, "Setupapi.lib")
 
@@ -41,34 +44,14 @@ std::ofstream outfile("output.txt");
 std::streambuf* old_cout_buf = std::cout.rdbuf();
 std::streambuf* old_cerr_buf = std::cerr.rdbuf();
 
-struct MultimediaButton {
-    QString name;
-    unsigned short int keyCode;
-
-    //constructor
-    MultimediaButton(QString name, unsigned short int keyCode) {
-        this->name = name;
-        this->keyCode = keyCode;
+void SimulateKeyPress(MultimediaButton vKey) {
+    for (int vKey : vKey.keyCodes) {
+        keybd_event(vKey, 0xbf, 0, 0); // Drücke die Taste
     }
-};
 
-struct AudioDevice {
-    wstring name;
-    IAudioEndpointVolume* endpointVolume;
-};
-
-void SimulateKeyPress(int vKey) {
-    keybd_event(vKey, 0xbf, 0, 0); // Press the key
-    keybd_event(vKey, 0xbf, KEYEVENTF_KEYUP, 0); // Release the key
-}
-
-QString getName(unsigned short int keyCode, vector<MultimediaButton> keys) {
-    for (const auto& key : keys) {
-        if (key.keyCode == keyCode) {
-            return key.name;
-        }
+    for (int vKey : vKey.keyCodes) {
+        keybd_event(vKey, 0xbf, KEYEVENTF_KEYUP, 0); // Lasse die Taste los
     }
-    return NULL;
 }
 
 vector<AudioDevice> GetAudioSessionOutputs() {
@@ -110,7 +93,8 @@ vector<AudioDevice> GetAudioSessionOutputs() {
 
                             // Create an AudioDevice struct and store it
                             AudioDevice audioDevice;
-                            audioDevice.name = varName.pwszVal;
+                            wchar_t *name = varName.pwszVal;
+                            audioDevice.name = QString::fromWCharArray(name);
                             audioDevice.endpointVolume = nullptr;
 
                             // Activate the IAudioEndpointVolume interface
@@ -154,7 +138,7 @@ vector<AudioDevice> GetAudioSessionOutputs() {
     return audioDevices;
 }
 
-void applyInputs(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps) {
+void applyInputs(const vector<AudioDevice>& audioDevices, vector<MultimediaButton>& keyMaps) {
     //the inputs 1 to 4 are the volume levels
     //the inputs 5 to 14 are the multimedia buttons
     for (int i = 1; i < INPUT_LEN-1; i++) {
@@ -170,7 +154,6 @@ void applyInputs(const vector<AudioDevice>& audioDevices, vector<unsigned short 
         else {
             // keypress is change from 1 to 0
             if (inputs[i] == 0 && prevInputs[i] == 1) {
-                std::cout << keyMaps[i - SLIDERS_COUNT - 1] << endl;
                 SimulateKeyPress(keyMaps[i - SLIDERS_COUNT - 1]);
             }
         }
@@ -220,7 +203,7 @@ HANDLE ConnectToSerial(const WCHAR* com) {
     return hSerial;
 }
 
-void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated) {
+void mainLoop(const vector<AudioDevice>& audioDevices, vector<MultimediaButton>& keyMaps, const WCHAR* com, std::atomic<bool>& shouldStop, std::condition_variable& threadTerminated) {
     DWORD bytesRead;
     char buffer[256];
     std::cout.rdbuf(outfile.rdbuf());
@@ -263,7 +246,7 @@ void mainLoop(const vector<AudioDevice>& audioDevices, vector<unsigned short int
             }
         }
         else {
-            std::cout << "Trying to reconnect to serial." << endl;
+            //std::cout << "Trying to reconnect to serial." << endl;
             connected = false;
             while (!shouldStop && !connected) {
                 // disconnect from serial if it is connected
