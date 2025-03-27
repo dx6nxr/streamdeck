@@ -259,7 +259,7 @@ void streamdeck::on_connectSerialBtn_clicked()
 }
 
 
-void streamdeck::on_comPortComboBox_editTextChanged(const QString &arg1)
+void streamdeck::on_comPortComboBox_currentTextChanged(const QString &arg1)
 {
     // change the com port
     com = arg1;
@@ -522,5 +522,4 @@ void streamdeck::on_addBinding_clicked()
     updateButtonBoxes();
     saveKeyBinds(buttonMaps);
 }
-
 

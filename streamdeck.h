@@ -51,9 +51,9 @@ private slots: // Qt slots for handling events
 
     void on_connectSerialBtn_clicked();
 
-    void on_comPortComboBox_editTextChanged(const QString &arg1);
-
     void on_addBinding_clicked();
+
+    void on_comPortComboBox_currentTextChanged(const QString &arg1);
 
 private:
     Ui::streamdeck *ui;
