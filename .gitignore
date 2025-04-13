@@ -34,6 +34,8 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
+*.tlog
+*.log
 
 # qtcreator generated files
 *.pro.user*
@@ -80,3 +82,6 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+/new-app/streamdeck-wasapi/vcpkg_installed
+/new-app/streamdeck-wasapi/.vs
+/new-app/streamdeck-wasapi/x64/

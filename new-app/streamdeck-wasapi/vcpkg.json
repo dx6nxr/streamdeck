@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "boost-system",
+    "boost-asio"
+  ]
+}

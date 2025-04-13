@@ -1,0 +1,1640 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "9c0a8233-3ecd-4fcb-9679-7a53be18a616")
+	(paper "A4")
+	(lib_symbols
+		(symbol "Connector:Conn_01x09_Socket"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 12.7 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x09_Socket"
+				(at 0 -12.7 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x09, script generated"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Conn_01x09_Socket_1_1"
+				(polyline
+					(pts
+						(xy -1.27 10.16) (xy -0.508 10.16)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 7.62) (xy -0.508 7.62)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 5.08) (xy -0.508 5.08)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 2.54) (xy -0.508 2.54)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 0) (xy -0.508 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -2.54) (xy -0.508 -2.54)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -5.08) (xy -0.508 -5.08)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -7.62) (xy -0.508 -7.62)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -10.16) (xy -0.508 -10.16)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 9.652)
+					(mid -0.5058 10.16)
+					(end 0 10.668)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 7.112)
+					(mid -0.5058 7.62)
+					(end 0 8.128)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 4.572)
+					(mid -0.5058 5.08)
+					(end 0 5.588)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 2.032)
+					(mid -0.5058 2.54)
+					(end 0 3.048)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -0.508)
+					(mid -0.5058 0)
+					(end 0 0.508)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -3.048)
+					(mid -0.5058 -2.54)
+					(end 0 -2.032)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -5.588)
+					(mid -0.5058 -5.08)
+					(end 0 -4.572)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -8.128)
+					(mid -0.5058 -7.62)
+					(end 0 -7.112)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -10.668)
+					(mid -0.5058 -10.16)
+					(end 0 -9.652)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 10.16 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 7.62 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -7.62 0)
+					(length 3.81)
+					(name "Pin_8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -10.16 0)
+					(length 3.81)
+					(name "Pin_9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "ScottoKeebs:Placeholder_Keyswitch"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "S"
+				(at 3.048 1.016 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Keyswitch"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "switch normally-open pushbutton push-button"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Placeholder_Keyswitch_0_1"
+				(polyline
+					(pts
+						(xy -2.54 2.54) (xy -1.524 1.524) (xy -1.524 1.524)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center -1.1684 1.1684)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.508 2.54) (xy 2.54 -0.508)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 1.016) (xy 2.032 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.143 -1.1938)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.524 -1.524) (xy 2.54 -2.54) (xy 2.54 -2.54) (xy 2.54 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -2.54 2.54 0)
+					(length 0)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 -2.54 180)
+					(length 0)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(junction
+		(at 86.36 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2b364d24-09dd-45b2-9156-234b19a512e5")
+	)
+	(junction
+		(at 86.36 107.95)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3d91c20c-da77-488d-a2d6-bb8d0c54f666")
+	)
+	(junction
+		(at 86.36 80.01)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "49f0f997-c472-4293-b818-60a718f03d9c")
+	)
+	(junction
+		(at 86.36 128.27)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "63eea24d-59bb-4cd7-9425-faac06de8599")
+	)
+	(junction
+		(at 86.36 99.06)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9a31c80a-cdbb-45fe-baa6-e0ca3137e08a")
+	)
+	(junction
+		(at 86.36 118.11)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b79d3199-6c35-4bef-83ef-62682b5b6fba")
+	)
+	(junction
+		(at 86.36 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e109070a-eccc-4756-974e-fac0549c8084")
+	)
+	(wire
+		(pts
+			(xy 120.65 100.33) (xy 121.92 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "01883538-bf47-42e5-bd41-7b56cbfccab8")
+	)
+	(wire
+		(pts
+			(xy 97.79 123.19) (xy 97.79 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14443d2b-d3bc-4787-ab66-20beb2c1d44b")
+	)
+	(wire
+		(pts
+			(xy 86.36 118.11) (xy 86.36 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "17eac22c-3a1a-4122-b80a-8a79a02e63bb")
+	)
+	(wire
+		(pts
+			(xy 91.44 85.09) (xy 120.65 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1b37d9fb-371b-434c-9ac5-6dd2db677c74")
+	)
+	(wire
+		(pts
+			(xy 91.44 104.14) (xy 121.92 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1cd5bb07-d88f-4e0d-80a8-3d60ac46764a")
+	)
+	(wire
+		(pts
+			(xy 121.92 104.14) (xy 121.92 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2673f726-d5ac-449a-9472-3cf55fbb42f9")
+	)
+	(wire
+		(pts
+			(xy 86.36 91.44) (xy 86.36 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2cd65f14-e4b2-4bea-bc05-a23f2effa63f")
+	)
+	(wire
+		(pts
+			(xy 116.84 96.52) (xy 116.84 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34ad7e55-df82-4852-bec5-2e6064a0c631")
+	)
+	(wire
+		(pts
+			(xy 93.98 107.95) (xy 121.92 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3643393c-75ca-4b3f-bb12-07cb0b889513")
+	)
+	(wire
+		(pts
+			(xy 86.36 146.05) (xy 86.36 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f83ade5-4605-4c36-ada5-987215cccdb1")
+	)
+	(wire
+		(pts
+			(xy 100.33 133.35) (xy 100.33 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43804693-4de5-4671-ab6c-c18314c710ab")
+	)
+	(wire
+		(pts
+			(xy 91.44 74.93) (xy 121.92 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f77f9b4-4688-40fd-92b8-41f6476b4ea0")
+	)
+	(wire
+		(pts
+			(xy 91.44 113.03) (xy 93.98 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64e56ee9-3bff-4c0e-b69a-377212a290cb")
+	)
+	(wire
+		(pts
+			(xy 121.92 146.05) (xy 86.36 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6600fe17-16c4-4425-aac2-ff67a7963c3a")
+	)
+	(wire
+		(pts
+			(xy 121.92 118.11) (xy 121.92 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6aea0d64-651b-4ae8-a986-b1d4718c49fc")
+	)
+	(wire
+		(pts
+			(xy 97.79 110.49) (xy 121.92 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "744868af-af46-4018-bd98-9a74f25a444b")
+	)
+	(wire
+		(pts
+			(xy 102.87 142.24) (xy 102.87 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8cd8bab1-4da0-499d-9a11-9bbc6577aa6c")
+	)
+	(wire
+		(pts
+			(xy 121.92 74.93) (xy 121.92 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "93b8e989-6b48-4f09-9d16-4059511d5c0d")
+	)
+	(wire
+		(pts
+			(xy 86.36 137.16) (xy 86.36 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "95d1076e-971b-4d22-826e-cf0e33f45f4a")
+	)
+	(wire
+		(pts
+			(xy 100.33 113.03) (xy 121.92 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9791a3f2-23a4-46ff-860f-ba3f9f73c866")
+	)
+	(wire
+		(pts
+			(xy 86.36 69.85) (xy 86.36 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "997e99a3-3dd1-448b-8ed9-d31716593747")
+	)
+	(wire
+		(pts
+			(xy 86.36 99.06) (xy 86.36 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a232d410-1bf1-4935-990e-5e01c222bc1c")
+	)
+	(wire
+		(pts
+			(xy 91.44 123.19) (xy 97.79 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a33aabeb-324c-4a6f-8e56-f551ef8cbaa5")
+	)
+	(wire
+		(pts
+			(xy 91.44 142.24) (xy 102.87 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a92467d0-dc69-4d31-97c7-4c394135244e")
+	)
+	(wire
+		(pts
+			(xy 91.44 96.52) (xy 116.84 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b67703a9-55d6-4ab9-9873-c00bdbaf54a5")
+	)
+	(wire
+		(pts
+			(xy 120.65 85.09) (xy 120.65 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b75ef42a-4d78-4d4f-8e6b-20f732b402a3")
+	)
+	(wire
+		(pts
+			(xy 102.87 115.57) (xy 121.92 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3c815ca-8ca7-4151-8164-69559c8cdd11")
+	)
+	(wire
+		(pts
+			(xy 86.36 107.95) (xy 86.36 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c99eae51-f9a7-4517-8b20-63eaaae0bbfe")
+	)
+	(wire
+		(pts
+			(xy 91.44 133.35) (xy 100.33 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "effd021f-97f2-4698-b621-bbe334001465")
+	)
+	(wire
+		(pts
+			(xy 86.36 128.27) (xy 86.36 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f374f926-a38d-441f-a967-8a92ff04dfb8")
+	)
+	(wire
+		(pts
+			(xy 116.84 102.87) (xy 121.92 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fc6f9275-3129-4a48-9ff2-3f1d569693a3")
+	)
+	(wire
+		(pts
+			(xy 93.98 113.03) (xy 93.98 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fe8b3b9b-8c43-4ce5-8800-1396e2558a02")
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 120.65 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0135f04e-a0c8-42ba-9a80-68a11df1e3fe")
+		(property "Reference" "S6"
+			(at 88.9 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "96cc5471-c4a5-447f-83a3-b0d763e7cf4a")
+		)
+		(pin "1"
+			(uuid "a8d59b71-ecb6-43ac-b957-bf0ab8731cef")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 82.55 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "13947140-3630-4a57-a71b-08cbf1a388dd")
+		(property "Reference" "S2"
+			(at 88.9 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fc86a52d-21a0-45e0-992b-5cb1db3fcec4")
+		)
+		(pin "2"
+			(uuid "2ccaa16a-4e87-449b-9bb1-b736ee3adcb0")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 101.6 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5ce4fa40-c502-4d76-8a43-12a43465edf8")
+		(property "Reference" "S4"
+			(at 89.408 99.314 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 94.996 91.948 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1aa8652a-2892-44cc-a050-26e696b590ea")
+		)
+		(pin "2"
+			(uuid "3e6194f6-e26f-4215-b7d9-2b9b4b47e0dd")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 72.39 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7d5fda22-3e7e-4b40-ba92-0f8607104347")
+		(property "Reference" "S1"
+			(at 88.9 66.294 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9a3d3d56-8c33-45d4-bc95-dde7f0a3559e")
+		)
+		(pin "2"
+			(uuid "89c0aad5-ab66-4993-baec-15ffeda84881")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 130.81 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "81d1ca3b-56aa-4dae-882d-3e0aee7a87d5")
+		(property "Reference" "S7"
+			(at 88.9 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c1fba6a0-0580-4d6d-9f17-dc3a7af05d59")
+		)
+		(pin "2"
+			(uuid "58cf2bcd-ccd5-4018-b1f8-0d2b1ec4486b")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x09_Socket")
+		(at 127 107.95 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8688e77d-ff25-4994-8cd7-ebcd4d422d4a")
+		(property "Reference" "J2"
+			(at 128.27 106.6799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x09_Socket"
+			(at 128.27 109.2199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_PinSocket_1.27mm:PinSocket_1x09_P1.27mm_Vertical"
+			(at 127 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 127 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x09, script generated"
+			(at 127 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "61b69673-d67f-4654-9bd8-bafc9fc64a93")
+		)
+		(pin "5"
+			(uuid "69147845-e5b2-4d95-8a23-d5e3adefb6e8")
+		)
+		(pin "4"
+			(uuid "2bf0be71-4aca-4d1b-a266-c4596caab43c")
+		)
+		(pin "1"
+			(uuid "71c2b554-4c63-4eda-93cd-57439c3ad565")
+		)
+		(pin "3"
+			(uuid "2f6568e2-1116-4d3e-bd2d-0d6a4f4bd484")
+		)
+		(pin "6"
+			(uuid "19ec5057-f877-4c41-9d53-7a4c4d9a6bbf")
+		)
+		(pin "7"
+			(uuid "7531c744-443f-44eb-a959-8858481359d2")
+		)
+		(pin "8"
+			(uuid "6f665f44-e07b-462e-9909-45bc710cbe38")
+		)
+		(pin "9"
+			(uuid "522a889d-0eee-4227-a470-c71f50abf0df")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 110.49 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "aae00d17-e61b-4883-873a-5756b30b5856")
+		(property "Reference" "S5"
+			(at 89.154 107.442 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "c6b28a4a-7e75-4783-a3f0-3a1cb47b1067")
+		)
+		(pin "1"
+			(uuid "a5e85019-11dd-4a8a-9033-e0ade94b3e15")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 139.7 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b6e2568e-f09e-4475-919c-0eb0ffff8ba9")
+		(property "Reference" "S8"
+			(at 88.9 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "af1fc8bf-e426-470e-ab8a-e1276cb87971")
+		)
+		(pin "2"
+			(uuid "23a3e18e-6f0d-4e6b-a854-7a61f1de32b6")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ScottoKeebs:Placeholder_Keyswitch")
+		(at 88.9 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f407759f-6445-4eb1-a699-b76985fb1256")
+		(property "Reference" "S3"
+			(at 88.9 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Keyswitch"
+			(at 88.9 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "PCM_Switch_Keyboard_Hotswap_Kailh:SW_Hotswap_Kailh_MX_1.00u"
+			(at 88.9 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 88.9 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, normally open, two pins, 45° tilted"
+			(at 88.9 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8466f7db-351a-4431-820e-bcb57a7fab49")
+		)
+		(pin "2"
+			(uuid "fa53b2cc-308a-41e2-bef9-c885694050bf")
+		)
+		(instances
+			(project ""
+				(path "/9c0a8233-3ecd-4fcb-9679-7a53be18a616"
+					(reference "S3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
