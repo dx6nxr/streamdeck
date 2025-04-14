@@ -1,0 +1,1103 @@
+/* General Body and Layout */
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    /* Light background for the body */
+}
+
+.main-container {
+    display: flex;
+    flex-grow: 1;
+    /* Allows this container to fill vertical space */
+    padding: 15px;
+    gap: 15px;
+    /* Space between sections */
+    overflow: hidden;
+    /* Prevent potential overflow issues */
+}
+
+h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    color: #333;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Left Section: Available Apps */
+.available-apps {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 200px;
+    /* Fixed width for available apps list */
+    display: flex;
+    flex-direction: column;
+    /* Stack title and list vertically */
+    background-color: #fff;
+    overflow-y: auto;
+    /* Add scroll if apps overflow */
+}
+
+.available-apps h2 {
+    flex-shrink: 0;
+    /* Prevent title from shrinking */
+}
+
+.app-list {
+    display: flex;
+    flex-direction: column;
+    /* Stack apps vertically */
+    gap: 8px;
+    /* Space between app boxes */
+    min-height: 50px;
+    /* Minimum height */
+    flex-grow: 1;
+    /* Allow list to take available space */
+    padding-top: 10px;
+}
+
+/* Middle Section: Group Containers */
+.group-containers-section {
+    flex-grow: 1;
+    /* Takes up remaining horizontal space */
+    border: 1px solid #ccc;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    /* Stack title and wrapper vertically */
+    background-color: #e9e9e9;
+    min-width: 300px;
+    /* Ensure it has some minimum width */
+}
+
+.group-containers-section h2 {
+    flex-shrink: 0;
+    /* Prevent title from shrinking */
+}
+
+.group-boxes-wrapper {
+    display: flex;
+    flex-direction: row;
+    /* Align group boxes horizontally */
+    gap: 15px;
+    /* Space between group boxes */
+    flex-grow: 1;
+    /* Fill available vertical space */
+    min-height: 150px;
+    /* Ensure wrapper has some height */
+}
+
+.group-box {
+    border: 1px dashed #aaa;
+    background-color: #fff;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    /* Stack title and apps vertically inside */
+    gap: 8px;
+    /* Space between title/apps within a group */
+    flex-grow: 1;
+    /* Allow boxes to grow and fill wrapper height */
+    flex-basis: 0;
+    /* Distribute space evenly */
+    min-width: 150px;
+    /* Minimum width for a group box */
+    transition: background-color 0.2s ease;
+    /* Feedback for dragover */
+    overflow-y: auto;
+    /* Allow scrolling within a group box if needed */
+}
+
+.group-box.drag-over {
+    background-color: #e0ffe0;
+    /* Highlight when dragging over */
+    border-style: solid;
+}
+
+.group-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 1em;
+    text-align: center;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    flex-shrink: 0;
+    /* Prevent title shrinking */
+}
+
+/* App Box Styling (used in both Available and Group lists) */
+.app-box {
+    border: 1px solid #b8cde0;
+    background-color: #dbe9f5;
+    /* Slightly different color */
+    padding: 8px 12px;
+    cursor: grab;
+    /* Indicate it's draggable */
+    user-select: none;
+    /* Prevent text selection during drag */
+    text-align: center;
+    white-space: nowrap;
+    /* Prevent name from wrapping */
+    transition: background-color 0.2s ease;
+    font-size: 0.9em;
+    flex-shrink: 0;
+    /* Prevent apps from shrinking weirdly */
+}
+
+.app-box:active,
+.app-box.dragging {
+    /* Style for dragging */
+    cursor: grabbing;
+    background-color: #c4dcf0;
+    opacity: 0.7;
+}
+
+
+/* Right Section: Dropdowns */
+.dropdown-section {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 250px;
+    /* Adjusted width */
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    overflow-y: auto;
+    /* Scroll if dropdowns overflow */
+}
+
+.dropdown-section h2 {
+    flex-shrink: 0;
+}
+
+.dropdown-grid {
+    display: grid;
+    gap: 15px;
+    /* Space between dropdowns */
+    padding-top: 10px;
+    /* Grid columns set by JS */
+}
+
+.dropdown-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #333;
+    font-weight: bold;
+}
+
+.dropdown-container select {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+    /* Include padding in width */
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Controls Section */
+.controls {
+    padding: 12px 15px;
+    background-color: #ddd;
+    border-top: 1px solid #bbb;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    /* Prevent controls from shrinking */
+}
+
+#save-state-btn {
+    padding: 8px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+#save-state-btn:hover {
+    background-color: #0056b3;
+}
+
+
+#json-output {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    max-height: 80px;
+    /* Adjusted height */
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.85em;
+    white-space: pre-wrap;
+    /* Wrap long lines */
+    word-break: break-all;
+    flex-grow: 1;
+    /* Take remaining space */
+    margin: 0;
+}
+
+/* Style for the fetch button */
+#fetch-apps-btn {
+    margin-bottom: 10px;
+    /* Space below the button */
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    align-self: flex-start;
+    /* Align button to the left */
+}
+
+#fetch-apps-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Adjust available-apps section padding if needed */
+.available-apps {
+    /* ... keep existing styles ... */
+    padding: 15px;
+    /* Ensure padding is consistent */
+}
+
+/* --- Keep all existing styles from the previous version --- */
+
+/* Add styles for Group Title Renaming */
+.group-box h3 {
+    /* ... existing styles ... */
+    cursor: pointer;
+    /* Indicate clickable for renaming */
+    position: relative;
+}
+
+.group-box h3:hover::after {
+    /* Optional: small edit hint on hover */
+    content: '✏️';
+    font-size: 0.7em;
+    position: absolute;
+    right: 0px;
+    top: 2px;
+    opacity: 0.6;
+}
+
+.group-title-input {
+    /* Style for the input field during rename */
+    width: 90%;
+    margin: 0 auto 10px auto;
+    /* Adjust position to match h3 */
+    padding: 4px;
+    font-size: 1em;
+    /* Match h3 font size */
+    text-align: center;
+    border: 1px solid #007bff;
+    box-sizing: border-box;
+}
+
+/* --- Settings Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    /* Sit on top of everything */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Semi-transparent black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Ensure it's above other content */
+}
+
+.modal-content {
+    background-color: var(--bg-color, #fff);
+    /* Use CSS variable for background */
+    color: var(--text-color, #333);
+    /* Use CSS variable for text */
+    padding: 25px 35px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    border: 1px solid var(--border-color, #ccc);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--text-color-light, #aaa);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-close-btn:hover {
+    color: var(--text-color, #333);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--header-color, #333);
+}
+
+.setting-item {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Align label and input nicely */
+}
+
+.setting-item label {
+    margin-right: 10px;
+    flex-basis: 60%;
+    /* Give label more space */
+}
+
+.setting-item input[type="number"],
+.setting-item input[type="checkbox"] {
+    padding: 5px;
+    border: 1px solid var(--border-color-input, #ccc);
+    border-radius: 3px;
+    background-color: var(--input-bg-color, #fff);
+    color: var(--input-text-color, #333);
+}
+
+.setting-item input[type="number"] {
+    width: 60px;
+    /* Fixed width for number inputs */
+}
+
+.setting-item input[type="checkbox"] {
+    height: 18px;
+    /* Make checkbox slightly larger */
+    width: 18px;
+    cursor: pointer;
+    margin-right: 20px;
+    /* Align checkbox nicely */
+}
+
+
+.settings-warning {
+    font-size: 0.85em;
+    color: var(--warning-color, #856404);
+    /* Bootstrap warning color */
+    background-color: var(--warning-bg-color, #fff3cd);
+    border: 1px solid var(--warning-border-color, #ffeeba);
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#settings-apply-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#settings-apply-btn:hover {
+    background-color: var(--primary-color-hover, #0056b3);
+}
+
+/* Style for the settings gear button */
+#settings-btn {
+    padding: 8px 10px;
+    font-size: 1.2em;
+    /* Make gear slightly bigger */
+    cursor: pointer;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    line-height: 1;
+    /* Adjust line height for icon */
+}
+
+#settings-btn:hover {
+    background-color: #5a6268;
+}
+
+
+/* --- Dark Theme Styles --- */
+:root {
+    /* Define light theme variables by default */
+    --bg-color: #ffffff;
+    --bg-color-secondary: #f0f0f0;
+    --bg-color-tertiary: #e9e9e9;
+    --text-color: #333333;
+    --text-color-light: #555555;
+    --border-color: #cccccc;
+    --border-color-input: #cccccc;
+    --header-color: #333333;
+    --primary-color: #007bff;
+    --primary-color-hover: #0056b3;
+    --app-bg-color: #dbe9f5;
+    --app-border-color: #b8cde0;
+    --app-dragging-bg-color: #c4dcf0;
+    --group-box-bg: #ffffff;
+    --group-box-border: #aaaaaa;
+    --group-box-drag-over-bg: #e0ffe0;
+    --input-bg-color: #ffffff;
+    --input-text-color: #333333;
+    --json-bg-color: #ffffff;
+    --json-border-color: #cccccc;
+    --controls-bg-color: #dddddd;
+    --controls-border-color: #bbbbbb;
+    --warning-color: #856404;
+    --warning-bg-color: #fff3cd;
+    --warning-border-color: #ffeeba;
+}
+
+body.dark-theme {
+    /* Define dark theme variables when .dark-theme is present */
+    --bg-color: #2c2c2c;
+    --bg-color-secondary: #3a3a3a;
+    --bg-color-tertiary: #444444;
+    --text-color: #e0e0e0;
+    --text-color-light: #bbbbbb;
+    --border-color: #555555;
+    --border-color-input: #666666;
+    --header-color: #e0e0e0;
+    --primary-color: #0d6efd;
+    --primary-color-hover: #0b5ed7;
+    --app-bg-color: #4a5a6a;
+    --app-border-color: #6a7a8a;
+    --app-dragging-bg-color: #5a6a7a;
+    --group-box-bg: #383838;
+    --group-box-border: #666666;
+    --group-box-drag-over-bg: #3a4a3a;
+    --input-bg-color: #555555;
+    --input-text-color: #e0e0e0;
+    --json-bg-color: #333333;
+    --json-border-color: #555555;
+    --controls-bg-color: #252525;
+    --controls-border-color: #444444;
+    --warning-color: #e0d1ab;
+    --warning-bg-color: #4d411f;
+    --warning-border-color: #6b5d3a;
+}
+
+/* Apply variables to elements */
+body {
+    background-color: var(--bg-color-secondary);
+    color: var(--text-color);
+}
+
+.main-container {
+    /* Variables applied implicitly via body */
+}
+
+/* Update sections to use variables */
+.available-apps,
+.dropdown-section {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+}
+
+.group-containers-section {
+    background-color: var(--bg-color-tertiary);
+    border-color: var(--border-color);
+}
+
+h2 {
+    color: var(--header-color);
+    border-bottom-color: var(--border-color);
+}
+
+.app-list {
+    /* Optional: add background/border if needed */
+}
+
+.group-box {
+    background-color: var(--group-box-bg);
+    border-color: var(--group-box-border);
+}
+
+.group-box h3 {
+    color: var(--text-color-light);
+    border-bottom-color: var(--border-color);
+}
+
+.group-box.drag-over {
+    background-color: var(--group-box-drag-over-bg);
+}
+
+
+.app-box {
+    background-color: var(--app-bg-color);
+    border-color: var(--app-border-color);
+    color: var(--text-color);
+    /* Ensure text is readable */
+}
+
+.app-box:active,
+.app-box.dragging {
+    background-color: var(--app-dragging-bg-color);
+}
+
+.dropdown-container label {
+    color: var(--text-color);
+}
+
+.dropdown-container select {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    border-color: var(--border-color-input);
+}
+
+/* Add styles for dropdown options in dark mode if needed */
+.dropdown-container select option {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+}
+
+
+.controls {
+    background-color: var(--controls-bg-color);
+    border-top-color: var(--controls-border-color);
+}
+
+#save-state-btn,
+#settings-btn,
+#fetch-apps-btn {
+    /* Assuming fetch button uses similar style */
+    /* Buttons already use primary color, just ensure hover is set */
+}
+
+#fetch-apps-btn {
+    background-color: var(--text-color-light);
+    /* Example: secondary button color */
+}
+
+#fetch-apps-btn:hover {
+    background-color: var(--text-color);
+}
+
+
+#json-output {
+    background-color: var(--json-bg-color);
+    border-color: var(--json-border-color);
+    color: var(--text-color);
+}
+
+/* Ensure modal uses variables */
+.modal-content {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.modal-close-btn {
+    color: var(--text-color-light);
+}
+
+.modal-close-btn:hover {
+    color: var(--text-color);
+}
+
+.modal-content h2 {
+    color: var(--header-color);
+}
+
+.setting-item input[type="number"],
+.setting-item input[type="checkbox"] {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    border-color: var(--border-color-input);
+}
+
+.settings-warning {
+    color: var(--warning-color);
+    background-color: var(--warning-bg-color);
+    border-color: var(--warning-border-color);
+}
+
+#settings-apply-btn {
+    background-color: var(--primary-color);
+}
+
+#settings-apply-btn:hover {
+    background-color: var(--primary-color-hover);
+}
+
+/* --- Settings Modal Styles Update --- */
+.modal-content {
+    /* Adjust max-width if needed for bindings */
+    max-width: 550px;
+}
+
+.binding-input-area,
+.bindings-list-area {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    /* Separator */
+    padding-bottom: 15px;
+}
+
+.bindings-list-area {
+    border-bottom: none;
+    /* No border after the list */
+}
+
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #444;
+}
+
+/* Style the key capture area */
+.key-capture-item {
+    display: flex;
+    align-items: center;
+}
+
+#setting-key-combo {
+    flex-grow: 1;
+    /* Take available space */
+    margin-right: 10px;
+    background-color: #eee;
+    /* Indicate readonly */
+    cursor: default;
+}
+
+#record-key-btn,
+.small-btn {
+    /* Style for record and add buttons */
+    padding: 6px 12px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-left: 5px;
+    /* Spacing */
+}
+
+#record-key-btn:hover,
+.small-btn:hover {
+    background-color: #5a6268;
+}
+
+#record-key-btn.is-recording {
+    /* Style when actively recording */
+    background-color: #dc3545;
+    /* Red */
+    color: white;
+}
+
+
+/* Style the Action input */
+#setting-key-action {
+    width: auto;
+    /* Allow it to size naturally in flex */
+    flex-grow: 1;
+    /* Take space */
+}
+
+/* Style the bindings list */
+#bindings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    /* Limit height and allow scroll */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+#bindings-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    border-bottom: 1px dotted #ddd;
+    font-family: monospace;
+    /* Good for key combos */
+    font-size: 0.95em;
+}
+
+#bindings-list li:last-child {
+    border-bottom: none;
+}
+
+#bindings-list .binding-text {
+    margin-right: 15px;
+    /* Space before delete button */
+    word-break: break-all;
+    /* Wrap long actions */
+}
+
+#bindings-list .binding-combo {
+    color: #0056b3;
+    /* Highlight the combo */
+    margin-right: 5px;
+}
+
+#bindings-list .binding-action {
+    color: #555;
+}
+
+
+#bindings-list button.delete-btn {
+    padding: 3px 8px;
+    font-size: 0.8em;
+    color: #dc3545;
+    /* Red */
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: auto;
+    /* Push to the right */
+}
+
+#bindings-list button.delete-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.settings-info {
+    /* Style for the info paragraph */
+    font-size: 0.85em;
+    color: #666;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* --- Keep relevant existing styles for layout, buttons, inputs etc. --- */
+
+/* --- Restore Dark Theme Styles --- */
+:root {
+    /* Define light theme variables by default */
+    --bg-color: #ffffff;
+    --bg-color-secondary: #f0f0f0;
+    --bg-color-tertiary: #e9e9e9;
+    --text-color: #333333;
+    --text-color-light: #555555;
+    --border-color: #cccccc;
+    --border-color-input: #cccccc;
+    --header-color: #333333;
+    --primary-color: #007bff;
+    --primary-color-hover: #0056b3;
+    --app-bg-color: #dbe9f5;
+    --app-border-color: #b8cde0;
+    --app-dragging-bg-color: #c4dcf0;
+    --group-box-bg: #ffffff;
+    --group-box-border: #aaaaaa;
+    --group-box-drag-over-bg: #e0ffe0;
+    --input-bg-color: #ffffff;
+    --input-text-color: #333333;
+    --json-bg-color: #ffffff;
+    --json-border-color: #cccccc;
+    --controls-bg-color: #dddddd;
+    --controls-border-color: #bbbbbb;
+    --warning-color: #856404;
+    --warning-bg-color: #fff3cd;
+    --warning-border-color: #ffeeba;
+    --danger-color: #dc3545;
+    --danger-bg-color: transparent;
+    --danger-border-color: #dc3545;
+    --danger-hover-color: white;
+    --danger-hover-bg-color: #dc3545;
+    --secondary-btn-bg: #6c757d;
+    --secondary-btn-hover-bg: #5a6268;
+}
+
+body.dark-theme {
+    /* Define dark theme variables */
+    --bg-color: #2c2c2c;
+    --bg-color-secondary: #3a3a3a;
+    --bg-color-tertiary: #444444;
+    --text-color: #e0e0e0;
+    --text-color-light: #bbbbbb;
+    --border-color: #555555;
+    --border-color-input: #666666;
+    --header-color: #e0e0e0;
+    --primary-color: #0d6efd;
+    --primary-color-hover: #0b5ed7;
+    --app-bg-color: #4a5a6a;
+    --app-border-color: #6a7a8a;
+    --app-dragging-bg-color: #5a6a7a;
+    --group-box-bg: #383838;
+    --group-box-border: #666666;
+    --group-box-drag-over-bg: #3a4a3a;
+    --input-bg-color: #555555;
+    --input-text-color: #e0e0e0;
+    --json-bg-color: #333333;
+    --json-border-color: #555555;
+    --controls-bg-color: #252525;
+    --controls-border-color: #444444;
+    --warning-color: #e0d1ab;
+    --warning-bg-color: #4d411f;
+    --warning-border-color: #6b5d3a;
+    --danger-color: #ff7b8a;
+    /* Lighter red for dark */
+    --danger-bg-color: transparent;
+    --danger-border-color: #ff7b8a;
+    --danger-hover-color: #2c2c2c;
+    /* Dark bg text */
+    --danger-hover-bg-color: #ff7b8a;
+    --secondary-btn-bg: #5a6268;
+    --secondary-btn-hover-bg: #4a5258;
+}
+
+/* --- Apply Theme Variables (Ensure all relevant elements use vars) --- */
+body {
+    background-color: var(--bg-color-secondary);
+    color: var(--text-color);
+}
+
+.main-container {}
+
+.available-apps,
+.dropdown-section {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+}
+
+.group-containers-section {
+    background-color: var(--bg-color-tertiary);
+    border-color: var(--border-color);
+}
+
+h2,
+.modal-content h2,
+.modal-content h3,
+.modal-content h4 {
+    color: var(--header-color);
+}
+
+h2 {
+    border-bottom-color: var(--border-color);
+}
+
+.group-box {
+    background-color: var(--group-box-bg);
+    border-color: var(--group-box-border);
+}
+
+.group-box h3 {
+    color: var(--text-color-light);
+    border-bottom-color: var(--border-color);
+}
+
+.group-box.drag-over {
+    background-color: var(--group-box-drag-over-bg);
+}
+
+.app-box {
+    background-color: var(--app-bg-color);
+    border-color: var(--app-border-color);
+    color: var(--text-color);
+}
+
+.app-box:active,
+.app-box.dragging {
+    background-color: var(--app-dragging-bg-color);
+}
+
+.dropdown-container label {
+    color: var(--text-color);
+}
+
+.dropdown-container select {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    border-color: var(--border-color-input);
+}
+
+.dropdown-container select option {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+}
+
+.controls {
+    background-color: var(--controls-bg-color);
+    border-top-color: var(--controls-border-color);
+}
+
+#json-output {
+    background-color: var(--json-bg-color);
+    border-color: var(--json-border-color);
+    color: var(--text-color);
+}
+
+/* Buttons */
+#settings-apply-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+#settings-apply-btn:hover {
+    background-color: var(--primary-color-hover);
+}
+
+#settings-btn,
+#record-key-btn,
+.small-btn,
+#fetch-apps-btn {
+    background-color: var(--secondary-btn-bg);
+    color: white;
+    border: none;
+}
+
+#settings-btn:hover,
+#record-key-btn:hover,
+.small-btn:hover,
+#fetch-apps-btn:hover {
+    background-color: var(--secondary-btn-hover-bg);
+}
+
+#record-key-btn.is-recording {
+    background-color: var(--danger-color);
+    color: var(--danger-hover-color);
+}
+
+#record-key-btn.is-recording:hover {
+    background-color: var(--danger-border-color);
+}
+
+
+/* --- Modal Styles Update --- */
+.modal-content {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    max-width: 600px;
+    /* Maybe wider */
+}
+
+.modal-close-btn {
+    color: var(--text-color-light);
+}
+
+.modal-close-btn:hover {
+    color: var(--text-color);
+}
+
+/* Style sections within modal */
+.settings-section {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+.settings-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 10px;
+    /* Less space before Apply button */
+}
+
+.settings-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: var(--header-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.settings-section h4 {
+    /* Sub-heading for bindings */
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: var(--text-color-light);
+}
+
+/* Input fields */
+.setting-item input[type="number"],
+.setting-item input[type="checkbox"] {
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    border-color: var(--border-color-input);
+}
+
+#setting-key-combo {
+    /* Key combo input */
+    background-color: var(--input-bg-color);
+    opacity: 0.8;
+    /* Slightly dimmed when readonly */
+}
+
+#setting-key-action {
+    /* Action input */
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    border-color: var(--border-color-input);
+    padding: 5px;
+    /* Consistent padding */
+}
+
+
+/* Bindings list */
+#bindings-list {
+    border-color: var(--border-color);
+    background-color: var(--bg-color-tertiary);
+}
+
+#bindings-list li {
+    border-bottom-color: var(--border-color);
+    color: var(--text-color);
+}
+
+#bindings-list .binding-combo {
+    color: var(--primary-color);
+    /* Use theme color */
+}
+
+#bindings-list .binding-action {
+    color: var(--text-color-light);
+}
+
+#bindings-list button.delete-btn {
+    color: var(--danger-color);
+    border-color: var(--danger-border-color);
+    background-color: var(--danger-bg-color);
+}
+
+#bindings-list button.delete-btn:hover {
+    color: var(--danger-hover-color);
+    background-color: var(--danger-hover-bg-color);
+}
+
+/* Warning text */
+.settings-warning {
+    color: var(--warning-color);
+    background-color: var(--warning-bg-color);
+    border-color: var(--warning-border-color);
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9em;
+}
