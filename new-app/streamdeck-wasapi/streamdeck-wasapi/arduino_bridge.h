@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <mutex> // Recommended if adding thread-safe getters
+#include <boost/asio.hpp>
 
 // This header file declares the public interface for retrieving information
 // from an Arduino board via asynchronous serial communication using Boost.Asio.
@@ -15,6 +16,16 @@
 // and the Arduino sketch.
 constexpr int EXPECTED_SLIDERS = 4;
 constexpr int EXPECTED_BUTTONS = 8;
+
+// --- Function Declarations ---
+// Handler for receiving data from Arduino
+void handle_receive(const boost::system::error_code& ec, std::size_t bytes_transferred);
+
+// Start asynchronous read operation (throws std::exception if error)
+void start_async_read();
+
+// Get available COM ports on the system
+std::vector<std::string> GetAvailableCOMPorts();
 
 // --- Public Data Access ---
 // Provides access to the latest values read from the Arduino.
@@ -56,7 +67,6 @@ bool start_arduino_reader(const std::string& port_name, unsigned int baud_rate);
  */
 void stop_arduino_reader();
 
-
 // --- Optional: Thread-safe Getter Function Declarations ---
 // Uncomment these and implement them in the .cpp file using the mutex.
 /*
@@ -64,4 +74,4 @@ std::vector<int> get_latest_slider_values();
 std::vector<int> get_latest_button_states();
 */
 
-#endif // ARDUINO_READER_HPP
+#endif // ARDUINO_BRIDGE_H

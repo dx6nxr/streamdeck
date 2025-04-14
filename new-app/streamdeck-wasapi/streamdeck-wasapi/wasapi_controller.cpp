@@ -12,7 +12,9 @@
 #include <windows.h>
 #include <audiopolicy.h>
 #include <fstream>
+#include <algorithm> // For std::transform
 #include "Resource.h"
+#include <cwctype>
 
 
 // Global variables
@@ -21,10 +23,22 @@ extern HWND g_hwnd;
 NOTIFYICONDATAW g_nid;
 
 // Function to convert wide string to narrow string
+// Function to convert wide string to narrow string
 std::string ws2s(const std::wstring& wstr) {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.to_bytes(wstr);
+    if (wstr.empty()) {
+        return std::string();
+    }
+
+    int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (sizeNeeded <= 0) {
+        throw std::runtime_error("WideCharToMultiByte failed");
+    }
+
+    std::string result(sizeNeeded - 1, '\0'); // Exclude null terminator
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &result[0], sizeNeeded, nullptr, nullptr);
+    return result;
 }
+
 
 // WASAPI Global Variables
 IMMDeviceEnumerator* g_pEnumerator = nullptr;
@@ -32,7 +46,6 @@ IMMDevice* g_pDevice = nullptr;
 IAudioSessionManager2* g_pSessionManager = nullptr;
 std::vector<ISimpleAudioVolume*> g_sessionVolumes;
 std::vector<std::wstring> g_sessionNames;
-bool g_wasapiInitialized = false;
 
 
 void ShowTrayBalloonTip(const wchar_t* title, const wchar_t* message, DWORD infoFlags = NIIF_INFO) {
@@ -136,7 +149,40 @@ void HandleTrayIconClick(HWND hwnd, LPARAM lParam) {
 
 // Function to initialize WASAPI
 bool InitializeWasapi() {
-    if (g_wasapiInitialized) return true;
+    std::cerr << "\n\n*** Initializing WASAPI ***\n\n" << std::endl;
+    
+    // If already initialized, clean up first
+    if (g_wasapiInitialized) {
+        std::cerr << "WASAPI already initialized, cleaning up for re-initialization..." << std::endl;
+        
+        // Clean up existing session volumes
+        for (size_t i = 0; i < g_sessionVolumes.size(); ++i) {
+            if (g_sessionVolumes[i]) {
+                g_sessionVolumes[i]->Release();
+                g_sessionVolumes[i] = nullptr;
+            }
+        }
+        
+        // Release other resources
+        if (g_pSessionManager) {
+            g_pSessionManager->Release();
+            g_pSessionManager = nullptr;
+        }
+        
+        if (g_pDevice) {
+            g_pDevice->Release();
+            g_pDevice = nullptr;
+        }
+        
+        if (g_pEnumerator) {
+            g_pEnumerator->Release();
+            g_pEnumerator = nullptr;
+        }
+        
+        g_sessionVolumes.clear();
+        g_sessionNames.clear();
+        g_wasapiInitialized = false;
+    }
 
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr)) {
@@ -191,6 +237,7 @@ bool InitializeWasapi() {
         return false;
     }
 
+    std::cerr << "Found " << sessionCount << " audio sessions" << std::endl;
     g_sessionVolumes.resize(sessionCount);
     g_sessionNames.resize(sessionCount);
 
@@ -220,9 +267,7 @@ bool InitializeWasapi() {
 
             LPWSTR sessionDisplayName = NULL;
             if (SUCCEEDED(pSessionControl2->GetDisplayName(&sessionDisplayName))) {
-                OutputDebugStringW(L"Session display name: ");
-                OutputDebugStringW(sessionDisplayName);
-                OutputDebugStringW(L"\n");
+                std::cerr << "Session " << i << " display name: " << ws2s(sessionDisplayName) << std::endl;
                 CoTaskMemFree(sessionDisplayName);
             }
 
@@ -240,10 +285,7 @@ bool InitializeWasapi() {
                         else {
                             appName = processName;
                         }
-                        appName += L" (PID: " + std::to_wstring(processId) + L")";
-                        OutputDebugStringW(L"Process name: ");
-                        OutputDebugStringW(appName.c_str());
-                        OutputDebugStringW(L"\n");
+                        std::cerr << "Session " << i << " process name: " << ws2s(appName) << std::endl;
                     }
                     CloseHandle(hProcess);
                 }
@@ -265,18 +307,16 @@ bool InitializeWasapi() {
     g_wasapiInitialized = true;
 
     // Debug output of session names
-    std::wcout << L"Application names:" << std::endl;
+    std::cerr << "Audio session names:" << std::endl;
     for (const auto& name : g_sessionNames) {
-        std::wcout << name << std::endl;
-        OutputDebugStringW(name.c_str());
-        OutputDebugStringW(L"\n");
+        std::cerr << "  " << ws2s(name) << std::endl;
     }
 
     return true;
 }
 
 void RefreshAudioSessions() {
-    OutputDebugStringW(L"Refreshing audio sessions...\n");
+    std::cerr << "\n\n*** Refreshing audio sessions... ***\n\n" << std::endl;
 
     // Clean up existing session volumes
     for (size_t i = 0; i < g_sessionVolumes.size(); ++i) {
@@ -295,10 +335,16 @@ void RefreshAudioSessions() {
 
     // Re-initialize the sessions
     if (!InitializeWasapi()) {
-        std::wcerr << L"Failed to reinitialize WASAPI during refresh." << std::endl;
+        std::cerr << "Failed to reinitialize WASAPI during refresh." << std::endl;
     }
     else {
-        std::wcout << L"Audio sessions refreshed successfully." << std::endl;
+        std::cerr << "Audio sessions refreshed successfully." << std::endl;
+        
+        // Output all current session names
+        std::cerr << "Current audio sessions after refresh:" << std::endl;
+        for (size_t i = 0; i < g_sessionNames.size(); ++i) {
+            std::cerr << "  " << i << ": " << ws2s(g_sessionNames[i]) << std::endl;
+        }
     }
 }
 
@@ -306,16 +352,99 @@ void RefreshAudioSessions() {
 
 
 void SetApplicationVolume(const std::wstring& appName, float volume) {
-    if (!g_wasapiInitialized) return;
-
-    for (size_t i = 0; i < g_sessionNames.size(); ++i) {
-        if (g_sessionNames[i].find(appName) != std::wstring::npos) {
-            g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
-            std::wcout << L"Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+    std::wcout << L"\n======= Setting volume for app: \"" << appName << L"\" to " << volume << L" ========" << std::endl;
+    
+    if (!g_wasapiInitialized) {
+        std::cerr << "WASAPI not initialized, initializing now..." << std::endl;
+        if (!InitializeWasapi()) {
+            std::cerr << "Failed to initialize WASAPI for volume control" << std::endl;
             return;
         }
     }
-    std::cerr << "Application " << ws2s(appName) << " not found." << std::endl;
+
+    // Debug: print current audio sessions
+    std::wcout << L"Current audio sessions (" << g_sessionNames.size() << L"):" << std::endl;
+    for (size_t i = 0; i < g_sessionNames.size(); ++i) {
+        std::wcout << L"  " << i << L": \"" << g_sessionNames[i] << L"\" (volume control: " 
+                  << (g_sessionVolumes[i] ? L"available" : L"NULL") << L")" << std::endl;
+    }
+
+    // Convert appName to lowercase for case-insensitive comparison
+    std::wstring lowerAppName = appName;
+    std::transform(lowerAppName.begin(), lowerAppName.end(), lowerAppName.begin(), 
+                   [](wchar_t c) { return std::towlower(c); });
+
+    // Try exact match first (case-insensitive)
+    std::wcout << L"Looking for exact match (case-insensitive)..." << std::endl;
+    for (size_t i = 0; i < g_sessionNames.size(); ++i) {
+        // Convert session name to lowercase for case-insensitive comparison
+        std::wstring lowerSessionName = g_sessionNames[i];
+        std::transform(lowerSessionName.begin(), lowerSessionName.end(), lowerSessionName.begin(),
+                       [](wchar_t c) { return std::towlower(c); });
+                       
+        if (lowerSessionName == lowerAppName) {
+            std::wcout << L"  EXACT MATCH found with session " << i << L": \"" << g_sessionNames[i] << L"\"" << std::endl;
+            if (g_sessionVolumes[i]) {
+                g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                return;
+            }
+            else {
+                std::wcout << L"  ERROR: Volume interface is NULL for this session" << std::endl;
+            }
+        }
+    }
+    
+    // If no exact match, try partial matches (case-insensitive)
+    std::wcout << L"No exact match found, trying partial matches (case-insensitive)..." << std::endl;
+    
+    // First try normal partial match (app name in session name)
+    for (size_t i = 0; i < g_sessionNames.size(); ++i) {
+        // Convert session name to lowercase for case-insensitive comparison
+        std::wstring lowerSessionName = g_sessionNames[i];
+        std::transform(lowerSessionName.begin(), lowerSessionName.end(), lowerSessionName.begin(),
+                       [](wchar_t c) { return std::towlower(c); });
+                       
+        // Check if app name is found within session name (case-insensitive)
+        bool partialMatch = lowerSessionName.find(lowerAppName) != std::wstring::npos;
+        if (partialMatch) {
+            std::wcout << L"  PARTIAL MATCH found: \"" << appName << L"\" is part of \"" << g_sessionNames[i] << L"\"" << std::endl;
+            if (g_sessionVolumes[i]) {
+                g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                return;
+            }
+            else {
+                std::wcout << L"  ERROR: Volume interface is NULL for this session" << std::endl;
+            }
+        }
+    }
+    
+    // Then try reverse partial match (session name in app name)
+    for (size_t i = 0; i < g_sessionNames.size(); ++i) {
+        if (!g_sessionNames[i].empty()) {
+            // Convert session name to lowercase for case-insensitive comparison
+            std::wstring lowerSessionName = g_sessionNames[i];
+            std::transform(lowerSessionName.begin(), lowerSessionName.end(), lowerSessionName.begin(),
+                           [](wchar_t c) { return std::towlower(c); });
+                           
+            bool reverseMatch = lowerAppName.find(lowerSessionName) != std::wstring::npos;
+            if (reverseMatch) {
+                std::wcout << L"  REVERSE MATCH found: \"" << g_sessionNames[i] << L"\" is part of \"" << appName << L"\"" << std::endl;
+                if (g_sessionVolumes[i]) {
+                    g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                    std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                    return;
+                }
+                else {
+                    std::wcout << L"  ERROR: Volume interface is NULL for this session" << std::endl;
+                }
+            }
+        }
+    }
+
+    // No match found
+    std::wcout << L"⚠️ NO MATCH FOUND for \"" << appName << L"\"" << std::endl;
 }
 
 std::vector<std::wstring> GetApplicationNames() {

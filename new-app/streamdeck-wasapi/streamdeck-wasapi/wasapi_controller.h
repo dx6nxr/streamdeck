@@ -16,6 +16,7 @@
 void AddTrayIcon(HWND hwnd, HINSTANCE hinstance, LPCWSTR tip);
 void RemoveTrayIcon(HWND hwnd);
 void HandleTrayIconClick(HWND hwnd, LPARAM lParam);
+std::string ws2s(const std::wstring& wstr);
 
 // WASAPI Functions
 bool InitializeWasapi();
@@ -24,6 +25,8 @@ std::vector<std::wstring> GetApplicationNames();
 void ToggleMuteApplication(const std::wstring& appName);
 void ShowTrayBalloonTip(const wchar_t* title, const wchar_t* message, DWORD infoFlags);
 extern void RefreshAudioSessions();
+
+bool g_wasapiInitialized = false;
 
 
 #endif // WASAPI_CONTROLLER_H

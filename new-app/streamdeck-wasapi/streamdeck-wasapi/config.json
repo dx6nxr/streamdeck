@@ -1,0 +1,30 @@
+{
+    "group_names": {
+        "Group 1": "Media",
+        "Group 2": "Game",
+        "Group 3": "Chat",
+        "Group 4": "Other"
+    },
+    "groups": {
+        "Group 1": [
+            "Spotify.exe",
+            "brave.exe"
+        ],
+        "Group 2": [],
+        "Group 3": [],
+        "Group 4": []
+    },
+    "numContainers": 4,
+    "numDropdowns": 8,
+    "settings": {
+        "setting-1": "",
+        "setting-2": "",
+        "setting-3": "",
+        "setting-4": "",
+        "setting-5": "",
+        "setting-6": "",
+        "setting-7": "",
+        "setting-8": ""
+    },
+    "theme": "dark"
+}

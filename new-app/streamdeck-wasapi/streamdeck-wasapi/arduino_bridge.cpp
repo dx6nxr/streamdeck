@@ -9,6 +9,13 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp> // If using older Boost versions for placeholders
 #include "arduino_bridge.h"
+#include <windows.h>
+#include <setupapi.h>
+#include <devguid.h>
+#include <regstr.h>
+#include <tchar.h>
+
+#pragma comment(lib, "setupapi.lib")
 
 // --- Configuration ---
 const std::string SERIAL_PORT_NAME = "COM3"; // Or "/dev/ttyACM0", "/dev/ttyUSB0" etc. - FIND YOURS!
@@ -49,6 +56,73 @@ void run_application_logic() {
     }
 }
 
+// --- Serial Port retireval function ---
+std::vector<std::string> GetAvailableCOMPorts() {
+    std::vector<std::string> portNames;
+
+    // Setup device information set for all COM ports
+    HDEVINFO hDevInfo = SetupDiGetClassDevs(
+        &GUID_DEVCLASS_PORTS,     // COM ports device class GUID
+        NULL,                     // No enumerator
+        NULL,                     // No parent window
+        DIGCF_PRESENT             // Only devices present in the system
+    );
+
+    if (hDevInfo == INVALID_HANDLE_VALUE) {
+        std::cerr << "Failed to get device information set. Error: " << GetLastError() << std::endl;
+        return portNames;
+    }
+
+    // Enumerate through all devices in the set
+    SP_DEVINFO_DATA devInfoData;
+    devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &devInfoData); i++) {
+        // Get the registry key containing the COM port name
+        HKEY hDeviceKey = SetupDiOpenDevRegKey(
+            hDevInfo,
+            &devInfoData,
+            DICS_FLAG_GLOBAL,
+            0,
+            DIREG_DEV,            // Device registry branch
+            KEY_READ              // Access rights
+        );
+
+        if (hDeviceKey != INVALID_HANDLE_VALUE) {
+            // Query for the COM port name
+            TCHAR portName[64];
+            DWORD portNameSize = sizeof(portName);
+            DWORD portNameType = 0;
+
+            if (RegQueryValueEx(
+                hDeviceKey,
+                _T("PortName"),   // Value name
+                NULL,             // Reserved
+                &portNameType,    // Type
+                (LPBYTE)portName, // Data buffer
+                &portNameSize     // Buffer size
+            ) == ERROR_SUCCESS) {
+                // Convert TCHAR to std::string (handles both ANSI and Unicode)
+#ifdef UNICODE
+                std::wstring wPortName(portName);
+                std::string portNameStr(wPortName.begin(), wPortName.end());
+#else
+                std::string portNameStr(portName);
+#endif
+
+                portNames.push_back(portNameStr);
+            }
+
+            // Close the registry key
+            RegCloseKey(hDeviceKey);
+        }
+    }
+
+    // Clean up device information set
+    SetupDiDestroyDeviceInfoList(hDevInfo);
+
+    return portNames;
+}
 
 // --- Serial Handling ---
 void process_data(const std::string& line) {
@@ -92,106 +166,4 @@ void process_data(const std::string& line) {
     catch (const std::out_of_range& e) {
         std::cerr << "Warning: Value out of range in line: " << line << " (" << e.what() << ")" << std::endl;
     }
-}
-
-// Callback function when data is received (up to the delimiter '\n')
-void handle_receive(const boost::system::error_code& ec, std::size_t bytes_transferred) {
-    if (ec) {
-        std::cerr << "Error receiving data: " << ec.message() << std::endl;
-        // Handle error (e.g., port closed, device disconnected)
-        // Maybe try reopening the port after a delay?
-        serial.close(); // Close the port on error
-        // Add logic here to attempt reconnection if desired
-        return;
-    }
-
-    if (bytes_transferred > 0) {
-        // Convert the received data in the buffer to a string
-        std::istream is(&read_buffer);
-        std::string line;
-        std::getline(is, line); // Reads up to the delimiter '\n'
-
-        // Remove potential carriage return '\r' sent by Arduino's println
-        if (!line.empty() && line.back() == '\r') {
-            line.pop_back();
-        }
-
-        if (!line.empty()) {
-            process_data(line);
-        }
-    }
-
-    // After handling the current data, immediately start listening for the next line
-    start_async_read();
-}
-
-// Initiates an asynchronous read operation
-void start_async_read() {
-    // Read until a newline character ('\n') is encountered
-    boost::asio::async_read_until(serial, read_buffer, '\n',
-        boost::bind(&handle_receive, // Use boost::bind for older Boost/compilers
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
-    // C++11 lambda alternative (often preferred):
-    /*
-    boost::asio::async_read_until(serial, read_buffer, '\n',
-        [](const boost::system::error_code& ec, std::size_t bytes_transferred) {
-            handle_receive(ec, bytes_transferred);
-        });
-    */
-}
-
-
-int main() {
-    try {
-        // --- Open and Configure Serial Port ---
-        serial.open(SERIAL_PORT_NAME);
-        serial.set_option(boost::asio::serial_port_base::baud_rate(BAUD_RATE));
-        serial.set_option(boost::asio::serial_port_base::character_size(8));
-        serial.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
-        serial.set_option(boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
-        serial.set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none));
-
-        std::cout << "Serial port " << SERIAL_PORT_NAME << " opened successfully at " << BAUD_RATE << " baud." << std::endl;
-
-        // --- Start Reading ---
-        start_async_read(); // Start the first asynchronous read
-
-        std::cout << "Starting Asio io_context..." << std::endl;
-
-        // --- Run the Asio event loop ---
-        // Option 1: Run io_context in the main thread.
-        // Your application logic needs to be integrated differently or run elsewhere.
-        // io_ctx.run(); // This call blocks until io_ctx.stop() is called or work runs out
-
-        // Option 2: Run io_context in a separate thread (More common for GUI/Game loops)
-        std::thread asio_thread([&]() {
-            try {
-                io_ctx.run();
-            }
-            catch (const std::exception& e) {
-                std::cerr << "Exception in ASIO thread: " << e.what() << std::endl;
-            }
-            });
-        std::cout << "ASIO thread started." << std::endl;
-
-        // Run your main application logic here (non-blocking)
-        run_application_logic(); // This function would contain your app's main loop
-
-        // --- Cleanup ---
-        asio_thread.join(); // Wait for the ASIO thread to finish (if using Option 2)
-
-
-    }
-    catch (const boost::system::system_error& e) {
-        std::cerr << "Error opening or configuring serial port " << SERIAL_PORT_NAME << ": " << e.what() << std::endl;
-        return 1;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "An unexpected error occurred: " << e.what() << std::endl;
-        return 1;
-    }
-
-    std::cout << "Program finished." << std::endl;
-    return 0;
 }
