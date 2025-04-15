@@ -253,8 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Apply design system
         bodyElement.classList.remove('material-you');
+        bodyElement.classList.remove('windows-11');
         if (config.designSystem === 'material-you') {
             bodyElement.classList.add('material-you');
+        }
+        else if (config.designSystem === 'windows-11') {
+            bodyElement.classList.add('windows-11');
         }
 
         // Update checkboxes/selects in settings if they exist

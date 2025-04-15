@@ -1,0 +1,911 @@
+/*
+  Windows 11 Inspired CSS Theme
+  Scoped to apply only when body has the 'windows-11' class.
+  Includes Light and Dark modes (requires 'dark-theme' class alongside 'windows-11').
+*/
+
+/* --- Base & Font --- */
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap');
+/* Ensure Segoe UI is available */
+
+/* Define variables within the theme scope */
+.windows-11 {
+    /* --- Light Theme Variables (Windows 11 Style) --- */
+    --font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+
+    /* Backgrounds */
+    --bg-color-primary: #ffffff;
+    /* Primary content background (e.g., modals, sections) */
+    --bg-color-secondary: #f3f3f3;
+    /* Main window background */
+    --bg-color-tertiary: #e9e9e9;
+    /* Slightly darker background area */
+    --bg-color-hover: rgba(0, 0, 0, 0.04);
+    /* Subtle hover for list items etc. */
+    --bg-color-active: rgba(0, 0, 0, 0.08);
+    /* Subtle active/pressed state */
+    --bg-color-input: #ffffff;
+    --bg-color-disabled: #f3f3f3;
+    --bg-color-accent-default: #0078d4;
+    /* Windows Blue */
+    --bg-color-accent-hover: #106ebe;
+    --bg-color-accent-active: #005a9e;
+    --bg-color-button-secondary: #f0f0f0;
+    --bg-color-button-secondary-hover: #e0e0e0;
+    --bg-color-button-secondary-active: #d0d0d0;
+
+    /* Text */
+    --text-color-primary: #1c1c1c;
+    /* Primary text */
+    --text-color-secondary: #3e3e3e;
+    /* Secondary text */
+    --text-color-tertiary: #606060;
+    /* Tertiary/Hint text */
+    --text-color-disabled: #a0a0a0;
+    --text-color-accent: #0078d4;
+    --text-color-on-accent: #ffffff;
+    --text-color-button-secondary: #1c1c1c;
+
+    /* Borders */
+    --border-color-default: #e0e0e0;
+    /* Default border for controls/divs */
+    --border-color-input: #d1d1d1;
+    /* Input border */
+    --border-color-focus: #0078d4;
+    /* Focus ring */
+    --border-color-button-secondary: #d1d1d1;
+
+    /* Others */
+    --shadow-default: 0 2px 5px rgba(0, 0, 0, 0.08);
+    /* Subtle shadow for depth */
+    --shadow-modal: 0 8px 16px rgba(0, 0, 0, 0.14);
+    /* Deeper shadow for modals */
+    --border-radius-small: 4px;
+    /* Small elements like buttons, inputs */
+    --border-radius-medium: 6px;
+    /* Cards, containers */
+    --border-radius-large: 8px;
+    /* Modals */
+
+    /* Specific elements from original file */
+    --group-box-drag-over-bg: #e6f2fa;
+    /* Light blue for drag-over */
+    --json-bg-color: #f9f9f9;
+    --controls-bg-color: #f3f3f3;
+    --controls-border-color: #e0e0e0;
+    --warning-color: #9d5d00;
+    --warning-bg-color: #fff4ce;
+    --warning-border-color: #ffde99;
+    --bindings-list-bg: #f9f9f9;
+    --bindings-list-border: #e0e0e0;
+    --binding-combo-color: #005a9e;
+    --binding-action-color: #3e3e3e;
+    --delete-btn-color: #d13438;
+    --delete-btn-border: #d13438;
+    --delete-btn-hover-bg: #d13438;
+    --delete-btn-hover-color: #ffffff;
+}
+
+/* Dark theme variables, applied when both classes are present */
+body.windows-11.dark-theme {
+    /* --- Dark Theme Variables (Windows 11 Style) --- */
+
+    /* Backgrounds */
+    --bg-color-primary: #2b2b2b;
+    /* Primary content background */
+    --bg-color-secondary: #202020;
+    /* Main window background */
+    --bg-color-tertiary: #313131;
+    /* Slightly darker background area */
+    --bg-color-hover: rgba(255, 255, 255, 0.06);
+    /* Subtle hover */
+    --bg-color-active: rgba(255, 255, 255, 0.1);
+    /* Subtle active/pressed state */
+    --bg-color-input: #313131;
+    --bg-color-disabled: #3a3a3a;
+    --bg-color-accent-default: #0095ff;
+    /* Brighter blue for dark mode */
+    --bg-color-accent-hover: #3aaeff;
+    --bg-color-accent-active: #6ac0ff;
+    --bg-color-button-secondary: #3d3d3d;
+    --bg-color-button-secondary-hover: #505050;
+    --bg-color-button-secondary-active: #606060;
+
+    /* Text */
+    --text-color-primary: #ffffff;
+    /* Primary text */
+    --text-color-secondary: #d1d1d1;
+    /* Secondary text */
+    --text-color-tertiary: #a0a0a0;
+    /* Tertiary/Hint text */
+    --text-color-disabled: #6a6a6a;
+    --text-color-accent: #3aaeff;
+    --text-color-on-accent: #000000;
+    /* Black text on bright blue */
+    --text-color-button-secondary: #ffffff;
+
+    /* Borders */
+    --border-color-default: #4a4a4a;
+    /* Default border */
+    --border-color-input: #5a5a5a;
+    /* Input border */
+    --border-color-focus: #3aaeff;
+    /* Focus ring */
+    --border-color-button-secondary: #5a5a5a;
+
+    /* Specific elements from original file */
+    --group-box-drag-over-bg: #00304d;
+    /* Dark blue for drag-over */
+    --json-bg-color: #3a3a3a;
+    --controls-bg-color: #252525;
+    --controls-border-color: #4a4a4a;
+    --warning-color: #ffdf91;
+    --warning-bg-color: #4d411f;
+    --warning-border-color: #6b5d3a;
+    --bindings-list-bg: #3a3a3a;
+    --bindings-list-border: #4a4a4a;
+    --binding-combo-color: #6ac0ff;
+    --binding-action-color: #d1d1d1;
+    --delete-btn-color: #ff8f8f;
+    --delete-btn-border: #ff8f8f;
+    --delete-btn-hover-bg: #ff8f8f;
+    --delete-btn-hover-color: #000000;
+}
+
+/* --- General Body and Layout --- */
+/* Apply base styles directly to body when .windows-11 is present */
+body.windows-11 {
+    font-family: var(--font-family);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg-color-secondary);
+    color: var(--text-color-primary);
+    font-size: 14px;
+    /* Common base size */
+    line-height: 1.5;
+    overflow: hidden;
+    /* Prevent body scroll */
+}
+
+.windows-11 .main-container {
+    display: flex;
+    flex-grow: 1;
+    padding: 16px;
+    gap: 16px;
+    overflow: hidden;
+    /* Prevent container scroll, allow inner scroll */
+}
+
+.windows-11 h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.2em;
+    /* Slightly larger */
+    color: var(--text-color-secondary);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color-default);
+    font-weight: 600;
+    /* Semibold */
+    flex-shrink: 0;
+}
+
+.windows-11 h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.05em;
+    text-align: center;
+    color: var(--text-color-secondary);
+    border-bottom: 1px solid var(--border-color-default);
+    padding-bottom: 6px;
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+/* --- Section Styling --- */
+.windows-11 .available-apps,
+.windows-11 .group-containers-section,
+.windows-11 .dropdown-section,
+.windows-11 .group-box,
+.windows-11 .modal-content {
+    border: 1px solid var(--border-color-default);
+    border-radius: var(--border-radius-medium);
+    padding: 16px;
+    background-color: var(--bg-color-primary);
+    box-shadow: var(--shadow-default);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Prevent section scroll, allow inner scroll */
+}
+
+.windows-11 .group-containers-section {
+    background-color: var(--bg-color-tertiary);
+    /* Use tertiary for this section */
+    padding: 12px;
+    /* Slightly less padding */
+    gap: 12px;
+}
+
+.windows-11 .available-apps {
+    width: 220px;
+    /* Slightly wider */
+    flex-shrink: 0;
+}
+
+.windows-11 .dropdown-section {
+    min-width: 350px;
+    /* Adjust width as needed */
+    flex: 1;
+}
+
+.windows-11 .group-box {
+    padding: 12px;
+    gap: 8px;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 150px;
+    transition: background-color 0.2s ease;
+    overflow-y: auto;
+    /* Allow scroll within group box */
+}
+
+.windows-11 .group-box.drag-over {
+    background-color: var(--group-box-drag-over-bg);
+    border-color: var(--border-color-focus);
+    /* Highlight border */
+    border-style: solid;
+}
+
+.windows-11 .group-boxes-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex-grow: 1;
+    min-height: 150px;
+    overflow-x: auto;
+    /* Allow horizontal scroll if boxes overflow */
+}
+
+
+/* --- App Box Styling --- */
+.windows-11 .app-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+    overflow-y: auto;
+    /* Scroll for apps */
+    padding: 5px;
+    /* Padding for scrollbar */
+    margin: -5px;
+    /* Counteract padding */
+}
+
+.windows-11 .app-box {
+    border: 1px solid transparent;
+    /* Border appears on hover/focus */
+    background-color: transparent;
+    /* Transparent base */
+    padding: 6px 10px;
+    cursor: grab;
+    user-select: none;
+    text-align: left;
+    /* Align text left */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    font-size: 0.9em;
+    flex-shrink: 0;
+    border-radius: var(--border-radius-small);
+    color: var(--text-color-primary);
+}
+
+.windows-11 .app-box:hover {
+    background-color: var(--bg-color-hover);
+    border-color: var(--border-color-default);
+}
+
+.windows-11 .app-box:active,
+.windows-11 .app-box.dragging {
+    cursor: grabbing;
+    background-color: var(--bg-color-active);
+    border-color: var(--border-color-focus);
+    color: var(--text-color-accent);
+    /* Highlight text */
+    opacity: 0.9;
+}
+
+/* --- Dropdown/Select Styling --- */
+.windows-11 .dropdown-grid {
+    display: grid;
+    gap: 16px;
+    padding-top: 10px;
+    overflow-y: auto;
+    /* Scroll for dropdowns */
+    flex-grow: 1;
+    /* Grid columns set by JS */
+}
+
+.windows-11 .dropdown-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    color: var(--text-color-secondary);
+    font-weight: 600;
+    /* Semibold labels */
+}
+
+.windows-11 .dropdown-container select {
+    width: 100%;
+    /* Full width */
+    padding: 8px 12px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color-input);
+    background-color: var(--bg-color-input);
+    color: var(--text-color-primary);
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+}
+
+.windows-11 .dropdown-container select:hover {
+    border-color: var(--text-color-tertiary);
+    /* Subtle hover border */
+}
+
+.windows-11 .dropdown-container select:focus {
+    outline: none;
+    border-color: var(--border-color-focus);
+    box-shadow: 0 0 0 2px var(--bg-color-secondary), 0 0 0 4px var(--border-color-focus);
+    /* Win11 focus ring */
+}
+
+.windows-11 .dropdown-container select option {
+    background-color: var(--bg-color-input);
+    /* Ensure options match theme */
+    color: var(--text-color-primary);
+}
+
+/* --- Input Styling --- */
+.windows-11 input[type="text"],
+.windows-11 input[type="number"],
+.windows-11 input[type="password"],
+.windows-11 input[type="email"] {
+    /* Add other types as needed */
+    padding: 8px 12px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color-input);
+    background-color: var(--bg-color-input);
+    color: var(--text-color-primary);
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    transition: border-color 0.2s ease;
+    width: 100%;
+    /* Default to full width */
+    box-sizing: border-box;
+    /* Include padding/border in width */
+}
+
+.windows-11 input[type="text"]:hover,
+.windows-11 input[type="number"]:hover,
+.windows-11 input[type="password"]:hover,
+.windows-11 input[type="email"]:hover {
+    border-color: var(--text-color-tertiary);
+}
+
+.windows-11 input[type="text"]:focus,
+.windows-11 input[type="number"]:focus,
+.windows-11 input[type="password"]:focus,
+.windows-11 input[type="email"]:focus {
+    outline: none;
+    border-color: var(--border-color-focus);
+    box-shadow: 0 0 0 2px var(--bg-color-secondary), 0 0 0 4px var(--border-color-focus);
+}
+
+.windows-11 input[type="checkbox"] {
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    accent-color: var(--bg-color-accent-default);
+    /* Style checkbox color */
+}
+
+.windows-11 .group-title-input {
+    width: calc(100% - 20px);
+    /* Adjust width */
+    margin: 0 auto 10px auto;
+    padding: 6px 10px;
+    font-size: 1em;
+    text-align: center;
+    border: 1px solid var(--border-color-focus);
+    /* Highlight during edit */
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+body.dark-theme .sliders-display,
+body.dark-theme .buttons-display {
+    background-color: var(--bg-color-primary);
+    /* Ensure light background for dark theme */
+    color: var(--text-color-primary);
+    border: 1px solid var(--border-color-default);
+    border-radius: var(--border-radius-small);
+    padding: 8px 12px;
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+body.windows-11.dark-theme .controller-section {
+    background-color: var(--bg-color-tertiary);
+    /* Ensure light background for dark theme */
+    color: var(--text-color-primary);
+    border: 1px solid var(--border-color-default);
+    border-radius: var(--border-radius-medium);
+    padding: 8px 12px;
+    font-family: var(--font-family);
+    font-size: 0.9em;
+}
+
+/* --- Button Styling (Windows 11 Style) --- */
+.windows-11 button {
+    border-radius: var(--border-radius-small);
+    border: 1px solid transparent;
+    padding: 8px 16px;
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    font-weight: 400;
+    /* Normal weight */
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.2;
+    /* Adjust line height */
+}
+
+.windows-11 button:focus-visible {
+    /* Use focus-visible for keyboard nav */
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg-color-secondary), 0 0 0 4px var(--border-color-focus);
+}
+
+/* Primary Button (Accent Color) */
+.windows-11 #save-state-btn,
+.windows-11 #settings-apply-btn,
+.windows-11 #fetch-apps-btn {
+    /* Add other primary buttons here */
+    background-color: var(--bg-color-accent-default);
+    color: var(--text-color-on-accent);
+    border-color: var(--bg-color-accent-default);
+    font-weight: 600;
+    /* Semibold for primary */
+}
+
+.windows-11 #save-state-btn:hover,
+.windows-11 #settings-apply-btn:hover,
+.windows-11 #fetch-apps-btn:hover {
+    background-color: var(--bg-color-accent-hover);
+    border-color: var(--bg-color-accent-hover);
+}
+
+.windows-11 #save-state-btn:active,
+.windows-11 #settings-apply-btn:active,
+.windows-11 #fetch-apps-btn:active {
+    background-color: var(--bg-color-accent-active);
+    border-color: var(--bg-color-accent-active);
+}
+
+/* Secondary Button (Gray) */
+.windows-11 #settings-btn,
+/* Gear icon button */
+.windows-11 button.small-btn,
+.windows-11 #record-key-btn,
+.windows-11 #add-binding-btn {
+    /* Add other secondary buttons here */
+    background-color: var(--bg-color-button-secondary);
+    color: var(--text-color-button-secondary);
+    border: 1px solid var(--border-color-button-secondary);
+}
+
+.windows-11 #settings-btn:hover,
+.windows-11 button.small-btn:hover,
+.windows-11 #record-key-btn:hover,
+.windows-11 #add-binding-btn:hover {
+    background-color: var(--bg-color-button-secondary-hover);
+    border-color: var(--border-color-input);
+    /* Slightly darker border on hover */
+}
+
+.windows-11 #settings-btn:active,
+.windows-11 button.small-btn:active,
+.windows-11 #record-key-btn:active,
+.windows-11 #add-binding-btn:active {
+    background-color: var(--bg-color-button-secondary-active);
+    border-color: var(--border-color-input);
+}
+
+/* Specific Button Adjustments */
+.windows-11 #settings-btn {
+    padding: 6px 8px;
+    /* Smaller padding for icon button */
+    font-size: 1.1em;
+    /* Slightly larger icon */
+    line-height: 1;
+}
+
+.windows-11 button.small-btn,
+.windows-11 #record-key-btn,
+.windows-11 #add-binding-btn {
+    padding: 6px 12px;
+    /* Smaller padding */
+    font-size: 0.85em;
+}
+
+.windows-11 #record-key-btn.is-recording {
+    background-color: var(--delete-btn-color);
+    /* Use delete color for recording */
+    border-color: var(--delete-btn-color);
+    color: var(--delete-btn-hover-color);
+}
+
+.windows-11 #record-key-btn.is-recording:hover {
+    background-color: var(--delete-btn-hover-bg);
+    border-color: var(--delete-btn-hover-bg);
+}
+
+
+/* --- Controls Section --- */
+.windows-11 .controls {
+    padding: 12px 16px;
+    background-color: var(--controls-bg-color);
+    border-top: 1px solid var(--controls-border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.windows-11 #json-output {
+    background-color: var(--json-bg-color);
+    border: 1px solid var(--border-color-default);
+    border-radius: var(--border-radius-small);
+    padding: 8px 12px;
+    max-height: 80px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    /* Monospace for code */
+    font-size: 0.8em;
+    white-space: pre-wrap;
+    word-break: break-all;
+    flex-grow: 1;
+    margin: 0;
+    color: var(--text-color-secondary);
+    line-height: 1.4;
+}
+
+/* --- Modal Styling --- */
+/* Modal overlay is global, but content is styled within the theme */
+.windows-11 .modal-overlay {
+    position: fixed;
+    inset: 0;
+    /* Replaces top, left, width, height */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Standard overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+    /* Subtle blur effect */
+}
+
+/* Darker overlay for dark theme */
+body.windows-11.dark-theme .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.windows-11 .modal-content {
+    /* Styles moved to the general section styling above */
+    padding: 24px;
+    /* Keep specific padding */
+    border-radius: var(--border-radius-large);
+    /* Keep specific radius */
+    max-width: 550px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-modal);
+    /* Keep specific shadow */
+    position: relative;
+    /* For close button positioning */
+    /* background-color, border are handled by the general section styling */
+}
+
+.windows-11 .modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.1em;
+    /* Smaller close icon */
+    font-weight: normal;
+    color: var(--text-color-tertiary);
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 50%;
+    /* Circular background on hover */
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.windows-11 .modal-close-btn:hover {
+    background-color: var(--bg-color-hover);
+    color: var(--text-color-primary);
+}
+
+.windows-11 .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: left;
+    /* Align modal title left */
+    color: var(--text-color-primary);
+    /* Use primary text color */
+    font-size: 1.4em;
+    border-bottom: none;
+    /* Remove border from modal title */
+}
+
+.windows-11 .modal-content h3 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: var(--text-color-secondary);
+    border-bottom: 1px solid var(--border-color-default);
+    padding-bottom: 8px;
+    text-align: left;
+}
+
+
+.windows-11 .setting-item {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.windows-11 .setting-item label {
+    margin-right: 0;
+    flex-basis: auto;
+    /* Let label size naturally */
+    flex-grow: 1;
+    /* Allow label to take space */
+    color: var(--text-color-primary);
+    font-weight: normal;
+    /* Normal weight for setting labels */
+}
+
+.windows-11 .setting-item input[type="number"] {
+    width: 70px;
+    /* Slightly wider number input */
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    text-align: right;
+}
+
+.windows-11 .setting-item input[type="checkbox"] {
+    margin-right: 0;
+    /* Remove extra margin */
+    flex-shrink: 0;
+}
+
+.windows-11 .setting-item select {
+    width: auto;
+    /* Full width for select */
+    padding: 8px 12px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color-input);
+    background-color: var(--bg-color-input);
+    color: var(--text-color-primary);
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    transition: border-color 0.2s ease;
+}
+
+.windows-11 .setting-item select:hover {
+    border-color: var(--text-color-tertiary);
+}
+
+.windows-11 .settings-warning {
+    font-size: 0.85em;
+    color: var(--warning-color);
+    background-color: var(--warning-bg-color);
+    border: 1px solid var(--warning-border-color);
+    padding: 10px 12px;
+    border-radius: var(--border-radius-small);
+    margin: 10px 0 20px 0;
+    text-align: left;
+}
+
+/* Settings - Key Bindings Section */
+.windows-11 .binding-input-area,
+.windows-11 .bindings-list-area {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color-default);
+    padding-bottom: 20px;
+}
+
+.windows-11 .bindings-list-area {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.windows-11 .key-capture-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Space between elements */
+    margin-bottom: 10px;
+    /* Space below capture row */
+}
+
+.windows-11 #setting-key-combo {
+    flex-grow: 1;
+    background-color: var(--bg-color-tertiary);
+    /* Indicate readonly */
+    cursor: default;
+    border-color: var(--border-color-input);
+    /* Match input border */
+    padding: 6px 10px;
+    /* Match small button padding */
+    font-size: 0.85em;
+    /* Match small button font size */
+    border-radius: var(--border-radius-small);
+    color: var(--text-color-secondary);
+}
+
+.windows-11 #setting-key-action {
+    flex-grow: 1;
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+
+.windows-11 #bindings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color-default);
+    padding: 8px;
+    background-color: var(--bindings-list-bg);
+    border-radius: var(--border-radius-small);
+}
+
+.windows-11 #bindings-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border-color-default);
+    font-family: var(--font-family);
+    /* Use standard font */
+    font-size: 0.9em;
+}
+
+.windows-11 #bindings-list li:last-child {
+    border-bottom: none;
+}
+
+.windows-11 #bindings-list .binding-text {
+    margin-right: 10px;
+    word-break: break-all;
+    flex-grow: 1;
+    /* Allow text to take space */
+}
+
+.windows-11 #bindings-list .binding-combo {
+    color: var(--binding-combo-color);
+    font-weight: 600;
+    /* Highlight combo */
+    margin-right: 8px;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+.windows-11 #bindings-list .binding-action {
+    color: var(--binding-action-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.windows-11 #bindings-list button.delete-btn {
+    padding: 3px 8px;
+    font-size: 0.8em;
+    color: var(--delete-btn-color);
+    background-color: transparent;
+    border: 1px solid transparent;
+    /* Border appears on hover */
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.windows-11 #bindings-list button.delete-btn:hover {
+    background-color: var(--delete-btn-hover-bg);
+    color: var(--delete-btn-hover-color);
+    border-color: var(--delete-btn-hover-bg);
+}
+
+.windows-11 .settings-info {
+    font-size: 0.85em;
+    color: var(--text-color-tertiary);
+    text-align: center;
+    margin-top: 20px;
+    padding: 0 10px;
+    /* Add padding */
+}
+
+/* --- Group Title Renaming --- */
+.windows-11 .group-box h3 {
+    cursor: pointer;
+    position: relative;
+    padding-right: 20px;
+    /* Space for icon */
+}
+
+.windows-11 .group-box h3:hover::after {
+    content: '✏️';
+    /* Consider using an SVG or icon font */
+    font-size: 0.8em;
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+    color: var(--text-color-tertiary);
+}
+
+/* --- Scrollbar Styling (Scoped to .windows-11) --- */
+/* Works in Webkit browsers (Chrome, Safari, Edge) */
+/* Apply to elements within .windows-11 */
+.windows-11 ::-webkit-scrollbar {
+    width: 8px;
+    /* Width of the scrollbar */
+    height: 8px;
+    /* Height for horizontal scrollbar */
+}
+
+.windows-11 ::-webkit-scrollbar-track {
+    background: transparent;
+    /* Make track invisible */
+}
+
+.windows-11 ::-webkit-scrollbar-thumb {
+    background-color: var(--text-color-tertiary);
+    /* Thumb color */
+    border-radius: 4px;
+    /* Rounded thumb */
+    border: 2px solid transparent;
+    /* Creates padding around thumb */
+    background-clip: padding-box;
+}
+
+.windows-11 ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-color-secondary);
+    /* Darker on hover */
+}
+
+/* For Firefox */
+/* Apply to elements within .windows-11 */
+.windows-11 * {
+    scrollbar-width: thin;
+    /* "auto" or "thin" */
+    scrollbar-color: var(--text-color-tertiary) transparent;
+    /* thumb and track color */
+}

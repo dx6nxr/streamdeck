@@ -16,6 +16,7 @@
     --md-on-tertiary: #ffffff;
     --md-on-tertiary-container: #370b1e;
     --md-error: #b3261e;
+    --md-success: #4caf50;
     --md-error-container: #f9dedc;
     --md-on-error: #ffffff;
     --md-on-error-container: #410e0b;
@@ -67,6 +68,7 @@
     --md-on-tertiary: #492532;
     --md-on-tertiary-container: #ffd8e4;
     --md-error: #f2b8b5;
+    --md-success: #4caf50;
     --md-error-container: #8c1d18;
     --md-on-error: #601410;
     --md-on-error-container: #f9dedc;
@@ -106,7 +108,7 @@
 }
 
 /* ======== CONTAINERS ======== */
-.material-you .available-apps,
+.available-apps,
 .material-you .dropdown-section,
 .material-you .controller-section {
     background-color: var(--md-surface);
@@ -115,6 +117,14 @@
     padding: 12px;
     box-shadow: var(--md-elevation-2);
     transition: box-shadow var(--md-transition-standard);
+}
+
+.material-you .controller-section {
+    background-color: var(--md-surface-variant);
+}
+
+body.dark-theme .material-you .controller-section {
+    background-color: var(--md-surface);
 }
 
 .material-you .available-apps:hover,
@@ -128,6 +138,8 @@
     border-radius: var(--md-radius-medium);
     border: none;
     padding: 12px;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 /* ======== GROUP BOXES ======== */
@@ -357,6 +369,53 @@
     margin-bottom: 12px;
 }
 
+.material-you #record-key-btn,
+.material-you #add-binding-btn {
+    border-radius: var(--md-radius-small);
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.material-you select#setting-com-port {
+    background-color: var(--md-surface);
+}
+
+.material-you select#setting-com-port:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px var(--md-primary-container);
+}
+
+.material-you input#setting-key-combo {
+    opacity: 1;
+    background-color: var(--md-surface);
+    padding: 8px 12px;
+}
+
+.material-you input#setting-key-action {
+    background-color: var(--md-surface);
+    padding: 8px 12px;
+}
+
+.material-you input#setting-key-action:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px var(--md-primary-container);
+}
+
+.material-you #settings-apply-btn {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+    border-radius: var(--md-radius-small);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.material-you #settings-apply-btn:hover {
+    background-color: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
 .material-you .setting-item label {
     display: block;
     margin-bottom: 6px;
@@ -449,17 +508,28 @@
     font-weight: 500;
     text-align: center;
     width: auto;
+    height: auto;
     min-width: 180px;
+    /* If the text is too long, it will wrap */
+    max-width: 90%;
 }
 
 .material-you .status-connected {
-    background-color: #0a8043;
-    color: white;
+    background-color: var(--md-success);
+    color: var(--md-on-surface-variant);
 }
 
 .material-you .status-disconnected {
     background-color: var(--md-error);
     color: var(--md-on-error);
+}
+
+.material-you .no-connection-warning {
+    color: var(--md-error);
+    border-radius: var(--md-radius-small);
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-top: 6px;
 }
 
 .material-you .controller-display {
@@ -468,7 +538,7 @@
 
 .material-you .sliders-display,
 .material-you .buttons-display {
-    background-color: var(--md-surface-variant);
+    background-color: var(--md-surface);
     border-radius: var(--md-radius-medium);
     border: none;
     padding: 12px;
@@ -596,4 +666,88 @@
 
 .material-you button:active::after {
     animation: ripple 0.8s ease-out;
+}
+
+.material-you div.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    border-radius: var(--md-radius-medium);
+    margin: 10px 16px;
+    background-color: var(--md-surface-variant);
+    border: none;
+}
+
+.material-you button#settings-btn {
+    background-color: var(--md-surface);
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-radius-small);
+    padding: 8px 12px;
+    font-weight: 500;
+}
+
+.material-you button#settings-btn:hover {
+    background-color: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+.material-you button#settings-btn:active {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+}
+
+.material-you pre#json-output {
+    background-color: var(--md-surface-variant);
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-radius-small);
+    padding: 6px 12px;
+    font-size: 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    border-color: var(--md-surface-variant);
+}
+
+/* --- Scrollbar styles --- */
+.material-you ::-webkit-scrollbar {
+    width: 10px;
+    /* Width of vertical scrollbar */
+    height: 10px;
+    /* Height of horizontal scrollbar */
+}
+
+/* Applies to the track (the groove the thumb slides in) */
+.material-you ::-webkit-scrollbar-track {
+    background: transparent;
+    /* Use surface-variant for a subtle track */
+    border-radius: 10px;
+    /* Optional: makes the track ends rounded */
+}
+
+/* Applies to the draggable scrolling handle (the thumb) */
+.material-you ::-webkit-scrollbar-thumb {
+    background-color: var(--md-outline);
+    /* Use outline color for the thumb */
+    border-radius: 10px;
+    /* Rounded thumb */
+    /* Create visual padding around the thumb: */
+    border: 3px solid var(--md-surface-variant);
+    /* Use track color for the border */
+    background-clip: padding-box;
+    /* Makes the background color stay within the padding edge */
+}
+
+/* Style the thumb on hover */
+.material-you ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--md-secondary);
+    /* Use secondary color for hover state */
+    /* Maintain the visual padding on hover */
+    border: 3px solid var(--md-surface-variant);
+    background-clip: padding-box;
+}
+
+/* Optional: Style the corner where vertical and horizontal scrollbars meet */
+.material-you::-webkit-scrollbar-corner {
+    background: var(--md-surface-variant);
+    /* Match the track background */
 }
