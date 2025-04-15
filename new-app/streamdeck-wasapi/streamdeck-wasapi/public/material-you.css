@@ -1,0 +1,599 @@
+/* Material You Design System CSS for StreamDeck WASAPI Controller */
+/* This file contains styling overrides to implement Google's Material You design language */
+
+:root {
+    /* Material You Color Variables - Light Mode */
+    --md-primary: #6750a4;
+    --md-primary-container: #eaddff;
+    --md-on-primary: #ffffff;
+    --md-on-primary-container: #21005e;
+    --md-secondary: #625b71;
+    --md-secondary-container: #e8def8;
+    --md-on-secondary: #ffffff;
+    --md-on-secondary-container: #1e192b;
+    --md-tertiary: #7d5260;
+    --md-tertiary-container: #ffd8e4;
+    --md-on-tertiary: #ffffff;
+    --md-on-tertiary-container: #370b1e;
+    --md-error: #b3261e;
+    --md-error-container: #f9dedc;
+    --md-on-error: #ffffff;
+    --md-on-error-container: #410e0b;
+    --md-background: #fffbfe;
+    --md-on-background: #1c1b1f;
+    --md-surface: #fffbfe;
+    --md-on-surface: #1c1b1f;
+    --md-surface-variant: #e7e0ec;
+    --md-on-surface-variant: #49454f;
+    --md-outline: #79747e;
+    --md-inverse-on-surface: #f4eff4;
+    --md-inverse-surface: #313033;
+    --md-inverse-primary: #d0bcff;
+    --md-shadow: rgba(0, 0, 0, 0.08);
+    --md-surface-tint: #6750a4;
+
+    /* Elevation values */
+    --md-elevation-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --md-elevation-2: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --md-elevation-3: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --md-elevation-4: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --md-elevation-5: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* Border radius */
+    --md-radius-small: 8px;
+    --md-radius-medium: 16px;
+    --md-radius-large: 28px;
+    --md-radius-pill: 100px;
+
+    /* Transitions */
+    --md-transition-standard: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Typography */
+    --md-font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+.material-you.dark-theme {
+    /* Material You Color Variables - Dark Mode */
+    --md-primary: #d0bcff;
+    --md-primary-container: #4f378b;
+    --md-on-primary: #371e73;
+    --md-on-primary-container: #eaddff;
+    --md-secondary: #ccc2dc;
+    --md-secondary-container: #4a4458;
+    --md-on-secondary: #332d41;
+    --md-on-secondary-container: #e8def8;
+    --md-tertiary: #efb8c8;
+    --md-tertiary-container: #633b48;
+    --md-on-tertiary: #492532;
+    --md-on-tertiary-container: #ffd8e4;
+    --md-error: #f2b8b5;
+    --md-error-container: #8c1d18;
+    --md-on-error: #601410;
+    --md-on-error-container: #f9dedc;
+    --md-background: #1c1b1f;
+    --md-on-background: #e6e1e5;
+    --md-surface: #1c1b1f;
+    --md-on-surface: #e6e1e5;
+    --md-surface-variant: #49454f;
+    --md-on-surface-variant: #cac4d0;
+    --md-outline: #938f99;
+    --md-inverse-on-surface: #1c1b1f;
+    --md-inverse-surface: #e6e1e5;
+    --md-inverse-primary: #6750a4;
+    --md-shadow: rgba(0, 0, 0, 0.2);
+    --md-surface-tint: #d0bcff;
+}
+
+/* ======== BASE STYLES ======== */
+.material-you {
+    font-family: var(--md-font-family);
+    background-color: var(--md-background);
+    color: var(--md-on-background);
+    line-height: 1.5;
+}
+
+.material-you .main-container {
+    gap: 16px;
+    padding: 16px;
+}
+
+.material-you h2 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: var(--md-on-surface);
+    border-bottom: none;
+}
+
+/* ======== CONTAINERS ======== */
+.material-you .available-apps,
+.material-you .dropdown-section,
+.material-you .controller-section {
+    background-color: var(--md-surface);
+    border-radius: var(--md-radius-medium);
+    border: none;
+    padding: 12px;
+    box-shadow: var(--md-elevation-2);
+    transition: box-shadow var(--md-transition-standard);
+}
+
+.material-you .available-apps:hover,
+.material-you .dropdown-section:hover,
+.material-you .controller-section:ho ver {
+    box-shadow: var(--md-elevation-3);
+}
+
+.material-you .group-containers-section {
+    background-color: var(--md-surface-variant);
+    border-radius: var(--md-radius-medium);
+    border: none;
+    padding: 12px;
+}
+
+/* ======== GROUP BOXES ======== */
+.material-you .group-box {
+    background-color: var(--md-surface);
+    border-radius: var(--md-radius-medium);
+    border: none;
+    padding: 12px;
+    box-shadow: var(--md-elevation-1);
+    transition: box-shadow var(--md-transition-standard);
+}
+
+.material-you .group-box:hover {
+    box-shadow: var(--md-elevation-2);
+}
+
+.material-you #fetch-apps-btn {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+    border-radius: var(--md-radius-pill);
+    border: none;
+    padding: 8px 16px;
+}
+
+.material-you .group-box h3 {
+    color: var(--md-primary);
+    font-size: 16px;
+    font-weight: 500;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--md-outline);
+}
+
+.material-you .group-box.drag-over {
+    background-color: var(--md-primary-container);
+    border: 2px dashed var(--md-primary);
+}
+
+/* ======== APP BOXES ======== */
+.material-you .app-box {
+    background-color: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    border-radius: var(--md-radius-pill);
+    border: none;
+    padding: 8px 12px;
+    margin: 2px 0;
+    transition: transform 0.15s ease, box-shadow var(--md-transition-standard);
+    box-shadow: var(--md-elevation-1);
+}
+
+.material-you .app-box:hover {
+    box-shadow: var(--md-elevation-2);
+    transform: translateY(-2px);
+}
+
+.material-you .app-box:active,
+.material-you .app-box.dragging {
+    background-color: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+/* ======== BUTTONS ======== */
+.material-you button {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+    border-radius: var(--md-radius-pill);
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    box-shadow: var(--md-elevation-1);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.material-you button:hover {
+    box-shadow: var(--md-elevation-2);
+    background-color: var(--md-primary);
+    filter: brightness(1.1);
+}
+
+.material-you button:active {
+    box-shadow: var(--md-elevation-1);
+    transform: translateY(1px);
+}
+
+/* Secondary buttons */
+.material-you button.small-btn,
+.material-you #record-key-btn,
+.material-you #add-binding-btn {
+    background-color: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    padding: 6px 12px;
+}
+
+.material-you button.small-btn:hover,
+.material-you #record-key-btn:hover,
+.material-you #add-binding-btn:hover {
+    background-color: var(--md-secondary-container);
+    filter: brightness(0.95);
+}
+
+/* Delete buttons */
+.material-you #bindings-list button.delete-btn {
+    background-color: var(--md-error-container);
+    color: var(--md-on-error-container);
+    border-radius: var(--md-radius-pill);
+    padding: 4px 8px;
+    min-width: 64px;
+}
+
+.material-you #bindings-list button.delete-btn:hover {
+    background-color: var(--md-error);
+    color: var(--md-on-error);
+}
+
+/* ======== INPUTS ======== */
+.material-you input[type="text"],
+.material-you input[type="number"],
+.material-you select {
+    background-color: var(--md-surface);
+    color: var(--md-on-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-radius-small);
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.material-you input[type="text"]:focus,
+.material-you input[type="number"]:focus,
+.material-you select:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px var(--md-primary-container);
+    outline: none;
+}
+
+.material-you select {
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    appearance: none;
+}
+
+/* Checkbox styling */
+.material-you input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--md-outline);
+    border-radius: 4px;
+    background-color: transparent;
+    position: relative;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.material-you input[type="checkbox"]:checked {
+    background-color: var(--md-primary);
+    border-color: var(--md-primary);
+}
+
+.material-you input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--md-on-primary);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* ======== MODAL ======== */
+.material-you .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.material-you .modal-content {
+    background-color: var(--md-surface);
+    color: var(--md-on-surface);
+    border-radius: var(--md-radius-large);
+    box-shadow: var(--md-elevation-5);
+    border: none;
+    padding: 16px;
+    max-width: 600px;
+}
+
+.material-you .modal-close-btn {
+    color: var(--md-on-surface-variant);
+    background: var(--md-surface-variant);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    top: 12px;
+    right: 12px;
+}
+
+.material-you .modal-close-btn:hover {
+    background-color: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+.material-you .settings-section {
+    background-color: var(--md-surface-variant);
+    border-radius: var(--md-radius-medium);
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.material-you .settings-section h3 {
+    color: var(--md-on-surface-variant);
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.material-you .setting-item {
+    margin-bottom: 12px;
+}
+
+.material-you .setting-item label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--md-on-surface);
+    font-weight: 500;
+}
+
+/* ======== CONTROLLER SECTION ======== */
+.material-you .controller-section {
+    transition: width 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+    width: 250px;
+    overflow: hidden;
+}
+
+.material-you .controller-section.collapsed {
+    width: 40px;
+    /* Narrower for Material You style */
+    padding: 8px 4px;
+}
+
+.material-you .controller-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-bottom: 8px;
+}
+
+.material-you .controller-section.collapsed .controller-header h2 {
+    display: none;
+}
+
+.material-you .controller-header h2 {
+    margin: 0;
+    flex: 1;
+}
+
+.material-you .toggle-btn {
+    background-color: var(--md-surface-variant);
+    color: var(--md-on-surface-variant);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 14px;
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 1;
+}
+
+.material-you .toggle-btn:hover {
+    background-color: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+.material-you .toggle-btn.collapsed {
+    transform: rotate(0deg);
+}
+
+.material-you .controller-content {
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 800px;
+    overflow: hidden;
+    opacity: 1;
+    width: 100%;
+}
+
+.material-you .controller-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.material-you .controller-section.collapsed .controller-display,
+.material-you .controller-section.collapsed .connection-status-container {
+    display: none;
+}
+
+.material-you .connection-status-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.material-you #connection-status {
+    padding: 8px 12px;
+    border-radius: var(--md-radius-pill);
+    font-weight: 500;
+    text-align: center;
+    width: auto;
+    min-width: 180px;
+}
+
+.material-you .status-connected {
+    background-color: #0a8043;
+    color: white;
+}
+
+.material-you .status-disconnected {
+    background-color: var(--md-error);
+    color: var(--md-on-error);
+}
+
+.material-you .controller-display {
+    gap: 12px;
+}
+
+.material-you .sliders-display,
+.material-you .buttons-display {
+    background-color: var(--md-surface-variant);
+    border-radius: var(--md-radius-medium);
+    border: none;
+    padding: 12px;
+}
+
+.material-you .sliders-display h3,
+.material-you .buttons-display h3 {
+    color: var(--md-on-surface-variant);
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--md-outline);
+    padding-bottom: 6px;
+}
+
+.material-you .slider-item,
+.material-you .button-item {
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.material-you .slider-bar {
+    height: 16px;
+    background-color: var(--md-outline);
+    border-radius: var(--md-radius-pill);
+}
+
+.material-you .slider-fill {
+    background-color: var(--md-primary);
+    border-radius: var(--md-radius-pill);
+}
+
+.material-you .button-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--md-surface);
+    border: 2px solid var(--md-outline);
+}
+
+.material-you .button-indicator.active {
+    background-color: var(--md-primary);
+    border-color: var(--md-primary);
+}
+
+/* ======== SPECIAL COMPONENTS ======== */
+.material-you .com-port-container {
+    gap: 8px;
+}
+
+.material-you #refresh-com-ports-btn {
+    background-color: var(--md-tertiary-container);
+    color: var(--md-on-tertiary-container);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+}
+
+.material-you #refresh-com-ports-btn:hover {
+    background-color: var(--md-tertiary);
+    color: var(--md-on-tertiary);
+}
+
+.material-you .settings-note {
+    font-size: 12px;
+    color: var(--md-on-surface-variant);
+    font-style: italic;
+    margin-top: 6px;
+}
+
+.material-you .settings-warning {
+    background-color: var(--md-error-container);
+    color: var(--md-on-error-container);
+    border-radius: var(--md-radius-small);
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+/* ======== RESPONSIVE ADJUSTMENTS ======== */
+@media (max-width: 768px) {
+    .material-you .main-container {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .material-you h2 {
+        font-size: 20px;
+    }
+
+    .material-you .modal-content {
+        padding: 16px;
+        margin: 16px;
+    }
+}
+
+/* ======== ANIMATIONS ======== */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.material-you button::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+}
+
+.material-you button:active::after {
+    animation: ripple 0.8s ease-out;
+}

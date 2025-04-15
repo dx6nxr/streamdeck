@@ -648,6 +648,18 @@ void StartWebServer()
         return crow::response(404, "Not Found: style.css");
         });
 
+    CROW_ROUTE(g_crow_app, "/material-you.css")([]() {
+        auto result = readFileContent("public/material-you.css");
+        if (result.has_value()) {
+            crow::response res;
+            addCorsHeaders(res);
+            res.add_header("Content-Type", getMimeType("public/material-you.css"));
+            res.write(result.value());
+            return res;
+        }
+        return crow::response(404, "Not Found: material-you.css");
+        });
+
     CROW_ROUTE(g_crow_app, "/script.js")([]() {
         auto result = readFileContent("public/script.js");
         if (result.has_value()) {

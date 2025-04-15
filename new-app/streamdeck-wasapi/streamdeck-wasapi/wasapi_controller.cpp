@@ -13,17 +13,18 @@
 #include <audiopolicy.h>
 #include <fstream>
 #include <algorithm> // For std::transform
+#include <memory>    // For smart pointers
 #include "Resource.h"
 #include <cwctype>
 
-
 // Global variables
-extern HINSTANCE hInst; // Get the instance from main
+extern HINSTANCE hInst;     // Get the instance from main
 extern HWND g_hwnd;
+extern bool g_wasapiInitialized; // Explicitly declare this is external
+
 NOTIFYICONDATAW g_nid;
 
-// Function to convert wide string to narrow string
-// Function to convert wide string to narrow string
+// Function to convert wide string to narrow string with error handling
 std::string ws2s(const std::wstring& wstr) {
     if (wstr.empty()) {
         return std::string();
@@ -31,14 +32,18 @@ std::string ws2s(const std::wstring& wstr) {
 
     int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
     if (sizeNeeded <= 0) {
-        throw std::runtime_error("WideCharToMultiByte failed");
+        std::cerr << "WideCharToMultiByte failed to calculate size, error: " << GetLastError() << std::endl;
+        return std::string("ConversionError");
     }
 
     std::string result(sizeNeeded - 1, '\0'); // Exclude null terminator
-    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &result[0], sizeNeeded, nullptr, nullptr);
+    if (WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &result[0], sizeNeeded, nullptr, nullptr) <= 0) {
+        std::cerr << "WideCharToMultiByte failed to convert, error: " << GetLastError() << std::endl;
+        return std::string("ConversionError");
+    }
+    
     return result;
 }
-
 
 // WASAPI Global Variables
 IMMDeviceEnumerator* g_pEnumerator = nullptr;
@@ -47,6 +52,14 @@ IAudioSessionManager2* g_pSessionManager = nullptr;
 std::vector<ISimpleAudioVolume*> g_sessionVolumes;
 std::vector<std::wstring> g_sessionNames;
 
+// Helper function to safely release COM objects
+template<typename T>
+void SafeRelease(T*& ptr) {
+    if (ptr) {
+        ptr->Release();
+        ptr = nullptr;
+    }
+}
 
 void ShowTrayBalloonTip(const wchar_t* title, const wchar_t* message, DWORD infoFlags = NIIF_INFO) {
     g_nid.uFlags = NIF_INFO;
@@ -55,6 +68,7 @@ void ShowTrayBalloonTip(const wchar_t* title, const wchar_t* message, DWORD info
     wcscpy_s(g_nid.szInfo, message);
     Shell_NotifyIconW(NIM_MODIFY, &g_nid);
 }
+
 // Function to add the tray icon
 void AddTrayIcon(HWND hwnd, HINSTANCE hinstance, LPCWSTR tip) {
     g_nid.cbSize = sizeof(NOTIFYICONDATAW);
@@ -73,30 +87,30 @@ void AddTrayIcon(HWND hwnd, HINSTANCE hinstance, LPCWSTR tip) {
 
     wcscpy_s(g_nid.szTip, tip);
     if (!Shell_NotifyIconW(NIM_ADD, &g_nid)) {
-        std::cerr << "Shell_NotifyIconW(NIM_ADD) failed" << std::endl;
+        std::cerr << "Shell_NotifyIconW(NIM_ADD) failed, error: " << GetLastError() << std::endl;
         OutputDebugStringW(L"Failed to add tray icon\n");
     }
     else {
         OutputDebugStringW(L"Tray icon added successfully\n");
     }
 
-    // Add this to your InitInstance function
     ShowTrayBalloonTip(L"WASAPI Volume Control", L"The application is now running in the system tray.", NIIF_INFO);
-
 }
 
 // Function to remove the tray icon
 void RemoveTrayIcon(HWND hwnd) {
     if (!Shell_NotifyIconW(NIM_DELETE, &g_nid)) {
-        std::cerr << "Shell_NotifyIconW(NIM_DELETE) failed" << std::endl;
-        // Handle error
+        std::cerr << "Shell_NotifyIconW(NIM_DELETE) failed, error: " << GetLastError() << std::endl;
     }
 }
 
-// Add this function to create a menu with icons
+// Function to create a menu with icons
 void ShowTrayIconMenu(HWND hwnd, POINT pt) {
     HMENU hMenu = CreatePopupMenu();
-    if (!hMenu) return;
+    if (!hMenu) {
+        std::cerr << "Failed to create popup menu, error: " << GetLastError() << std::endl;
+        return;
+    }
 
     // Get applications
     std::vector<std::wstring> appNames = GetApplicationNames();
@@ -129,7 +143,6 @@ void ShowTrayIconMenu(HWND hwnd, POINT pt) {
     DestroyMenu(hMenu);
 }
 
-
 // Function to handle tray icon clicks
 void HandleTrayIconClick(HWND hwnd, LPARAM lParam) {
     OutputDebugStringW(L"Tray icon clicked\n");
@@ -147,6 +160,26 @@ void HandleTrayIconClick(HWND hwnd, LPARAM lParam) {
     }
 }
 
+// Clean up WASAPI resources
+void CleanupWasapi() {
+    std::cerr << "Cleaning up WASAPI resources..." << std::endl;
+    
+    // Clean up existing session volumes
+    for (auto& volume : g_sessionVolumes) {
+        SafeRelease(volume);
+    }
+    g_sessionVolumes.clear();
+    g_sessionNames.clear();
+    
+    // Release other resources
+    SafeRelease(g_pSessionManager);
+    SafeRelease(g_pDevice);
+    SafeRelease(g_pEnumerator);
+    
+    g_wasapiInitialized = false;
+    std::cerr << "WASAPI cleanup complete" << std::endl;
+}
+
 // Function to initialize WASAPI
 bool InitializeWasapi() {
     std::cerr << "\n\n*** Initializing WASAPI ***\n\n" << std::endl;
@@ -154,34 +187,7 @@ bool InitializeWasapi() {
     // If already initialized, clean up first
     if (g_wasapiInitialized) {
         std::cerr << "WASAPI already initialized, cleaning up for re-initialization..." << std::endl;
-        
-        // Clean up existing session volumes
-        for (size_t i = 0; i < g_sessionVolumes.size(); ++i) {
-            if (g_sessionVolumes[i]) {
-                g_sessionVolumes[i]->Release();
-                g_sessionVolumes[i] = nullptr;
-            }
-        }
-        
-        // Release other resources
-        if (g_pSessionManager) {
-            g_pSessionManager->Release();
-            g_pSessionManager = nullptr;
-        }
-        
-        if (g_pDevice) {
-            g_pDevice->Release();
-            g_pDevice = nullptr;
-        }
-        
-        if (g_pEnumerator) {
-            g_pEnumerator->Release();
-            g_pEnumerator = nullptr;
-        }
-        
-        g_sessionVolumes.clear();
-        g_sessionNames.clear();
-        g_wasapiInitialized = false;
+        CleanupWasapi();
     }
 
     HRESULT hr = CoInitialize(NULL);
@@ -200,7 +206,7 @@ bool InitializeWasapi() {
     hr = g_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &g_pDevice);
     if (FAILED(hr)) {
         std::cerr << "GetDefaultAudioEndpoint failed: " << std::hex << hr << std::endl;
-        g_pEnumerator->Release();
+        SafeRelease(g_pEnumerator);
         CoUninitialize();
         return false;
     }
@@ -208,8 +214,8 @@ bool InitializeWasapi() {
     hr = g_pDevice->Activate(__uuidof(IAudioSessionManager2), CLSCTX_ALL, NULL, (void**)&g_pSessionManager);
     if (FAILED(hr)) {
         std::cerr << "Activate(IAudioSessionManager2) failed: " << std::hex << hr << std::endl;
-        g_pDevice->Release();
-        g_pEnumerator->Release();
+        SafeRelease(g_pDevice);
+        SafeRelease(g_pEnumerator);
         CoUninitialize();
         return false;
     }
@@ -218,9 +224,9 @@ bool InitializeWasapi() {
     hr = g_pSessionManager->GetSessionEnumerator(&pSessionEnumerator);
     if (FAILED(hr)) {
         std::cerr << "GetSessionEnumerator failed: " << std::hex << hr << std::endl;
-        g_pSessionManager->Release();
-        g_pDevice->Release();
-        g_pEnumerator->Release();
+        SafeRelease(g_pSessionManager);
+        SafeRelease(g_pDevice);
+        SafeRelease(g_pEnumerator);
         CoUninitialize();
         return false;
     }
@@ -229,10 +235,10 @@ bool InitializeWasapi() {
     hr = pSessionEnumerator->GetCount(&sessionCount);
     if (FAILED(hr)) {
         std::cerr << "GetCount failed: " << std::hex << hr << std::endl;
-        pSessionEnumerator->Release();
-        g_pSessionManager->Release();
-        g_pDevice->Release();
-        g_pEnumerator->Release();
+        SafeRelease(pSessionEnumerator);
+        SafeRelease(g_pSessionManager);
+        SafeRelease(g_pDevice);
+        SafeRelease(g_pEnumerator);
         CoUninitialize();
         return false;
     }
@@ -250,11 +256,10 @@ bool InitializeWasapi() {
             continue;
         }
 
-        // FIXED: Don't create an unused local variable, just use g_sessionVolumes[i] directly
         hr = pSessionControl->QueryInterface(__uuidof(ISimpleAudioVolume), (void**)&g_sessionVolumes[i]);
         if (FAILED(hr)) {
             g_sessionVolumes[i] = NULL; // Set to NULL explicitly on failure
-            pSessionControl->Release();
+            SafeRelease(pSessionControl);
             g_sessionNames[i] = L"Unknown Session";
             continue;
         }
@@ -291,19 +296,16 @@ bool InitializeWasapi() {
                 }
             }
             g_sessionNames[i] = appName;
-            pSessionControl2->Release();
+            SafeRelease(pSessionControl2);
         }
         else {
             g_sessionNames[i] = L"Unknown Session";
         }
 
-        // REMOVED: Don't overwrite g_sessionVolumes[i] with pSimpleVolume
-        // g_sessionVolumes[i] = pSimpleVolume; 
-
-        pSessionControl->Release();
+        SafeRelease(pSessionControl);
     }
 
-    pSessionEnumerator->Release();
+    SafeRelease(pSessionEnumerator);
     g_wasapiInitialized = true;
 
     // Debug output of session names
@@ -318,20 +320,8 @@ bool InitializeWasapi() {
 void RefreshAudioSessions() {
     std::cerr << "\n\n*** Refreshing audio sessions... ***\n\n" << std::endl;
 
-    // Clean up existing session volumes
-    for (size_t i = 0; i < g_sessionVolumes.size(); ++i) {
-        if (g_sessionVolumes[i]) {
-            g_sessionVolumes[i]->Release();
-            g_sessionVolumes[i] = nullptr;
-        }
-    }
-
-    // Clear the vectors
-    g_sessionVolumes.clear();
-    g_sessionNames.clear();
-
-    // Set as not initialized so the next call to GetApplicationNames will reinitialize
-    g_wasapiInitialized = false;
+    // Clean up and re-initialize
+    CleanupWasapi();
 
     // Re-initialize the sessions
     if (!InitializeWasapi()) {
@@ -348,9 +338,6 @@ void RefreshAudioSessions() {
     }
 }
 
-
-
-
 void SetApplicationVolume(const std::wstring& appName, float volume) {
     std::wcout << L"\n======= Setting volume for app: \"" << appName << L"\" to " << volume << L" ========" << std::endl;
     
@@ -361,6 +348,9 @@ void SetApplicationVolume(const std::wstring& appName, float volume) {
             return;
         }
     }
+
+    // Clamp volume to valid range
+    volume = (std::max)(0.0f, (std::min)(1.0f, volume));
 
     // Debug: print current audio sessions
     std::wcout << L"Current audio sessions (" << g_sessionNames.size() << L"):" << std::endl;
@@ -385,8 +375,12 @@ void SetApplicationVolume(const std::wstring& appName, float volume) {
         if (lowerSessionName == lowerAppName) {
             std::wcout << L"  EXACT MATCH found with session " << i << L": \"" << g_sessionNames[i] << L"\"" << std::endl;
             if (g_sessionVolumes[i]) {
-                g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
-                std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                HRESULT hr = g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                if (SUCCEEDED(hr)) {
+                    std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                } else {
+                    std::wcout << L"  ERROR: Failed to set volume, hr=" << std::hex << hr << std::endl;
+                }
                 return;
             }
             else {
@@ -410,8 +404,12 @@ void SetApplicationVolume(const std::wstring& appName, float volume) {
         if (partialMatch) {
             std::wcout << L"  PARTIAL MATCH found: \"" << appName << L"\" is part of \"" << g_sessionNames[i] << L"\"" << std::endl;
             if (g_sessionVolumes[i]) {
-                g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
-                std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                HRESULT hr = g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                if (SUCCEEDED(hr)) {
+                    std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                } else {
+                    std::wcout << L"  ERROR: Failed to set volume, hr=" << std::hex << hr << std::endl;
+                }
                 return;
             }
             else {
@@ -432,8 +430,12 @@ void SetApplicationVolume(const std::wstring& appName, float volume) {
             if (reverseMatch) {
                 std::wcout << L"  REVERSE MATCH found: \"" << g_sessionNames[i] << L"\" is part of \"" << appName << L"\"" << std::endl;
                 if (g_sessionVolumes[i]) {
-                    g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
-                    std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                    HRESULT hr = g_sessionVolumes[i]->SetMasterVolume(volume, NULL);
+                    if (SUCCEEDED(hr)) {
+                        std::wcout << L"  Volume of " << g_sessionNames[i] << L" set to " << volume << std::endl;
+                    } else {
+                        std::wcout << L"  ERROR: Failed to set volume, hr=" << std::hex << hr << std::endl;
+                    }
                     return;
                 }
                 else {
@@ -454,26 +456,53 @@ std::vector<std::wstring> GetApplicationNames() {
     return g_sessionNames;
 }
 
-
 void ToggleMuteApplication(const std::wstring& appName) {
     if (!g_wasapiInitialized) {
         InitializeWasapi();
     }
 
+    // Convert appName to lowercase for case-insensitive comparison
+    std::wstring lowerAppName = appName;
+    std::transform(lowerAppName.begin(), lowerAppName.end(), lowerAppName.begin(), 
+                   [](wchar_t c) { return std::towlower(c); });
+
     for (size_t i = 0; i < g_sessionNames.size(); ++i) {
-        if (g_sessionNames[i].find(appName) != std::wstring::npos) {
-            //set the volunme of the app to 0
-			float currentVolume = 0.0f;
-			g_sessionVolumes[i]->GetMasterVolume(&currentVolume);
-			if (currentVolume > 0.0f) {
-				g_sessionVolumes[i]->SetMasterVolume(0.0f, NULL);
-				std::wcout << L"Volume of " << g_sessionNames[i] << L" muted." << std::endl;
-			}
-            else {
-                g_sessionVolumes[i]->SetMasterVolume(1.0f, NULL);
-                std::wcout << L"Volume of " << g_sessionNames[i] << L" unmuted." << std::endl;
+        // Convert session name to lowercase
+        std::wstring lowerSessionName = g_sessionNames[i];
+        std::transform(lowerSessionName.begin(), lowerSessionName.end(), lowerSessionName.begin(),
+                       [](wchar_t c) { return std::towlower(c); });
+        
+        // Check for partial match (case-insensitive)
+        if (lowerSessionName.find(lowerAppName) != std::wstring::npos) {
+            if (g_sessionVolumes[i]) {
+                float currentVolume = 0.0f;
+                HRESULT hr = g_sessionVolumes[i]->GetMasterVolume(&currentVolume);
+                if (FAILED(hr)) {
+                    std::wcout << L"Error getting volume for " << g_sessionNames[i] << L", hr=" << std::hex << hr << std::endl;
+                    continue;
+                }
+                
+                if (currentVolume > 0.0f) {
+                    hr = g_sessionVolumes[i]->SetMasterVolume(0.0f, NULL);
+                    if (SUCCEEDED(hr)) {
+                        std::wcout << L"Volume of " << g_sessionNames[i] << L" muted." << std::endl;
+                    } else {
+                        std::wcout << L"Error muting " << g_sessionNames[i] << L", hr=" << std::hex << hr << std::endl;
+                    }
+                } else {
+                    hr = g_sessionVolumes[i]->SetMasterVolume(1.0f, NULL);
+                    if (SUCCEEDED(hr)) {
+                        std::wcout << L"Volume of " << g_sessionNames[i] << L" unmuted." << std::endl;
+                    } else {
+                        std::wcout << L"Error unmuting " << g_sessionNames[i] << L", hr=" << std::hex << hr << std::endl;
+                    }
+                }
+                return;
+            } else {
+                std::wcout << L"Volume interface is NULL for " << g_sessionNames[i] << std::endl;
             }
-            return;
         }
     }
+    
+    std::wcout << L"No matching application found for: " << appName << std::endl;
 }

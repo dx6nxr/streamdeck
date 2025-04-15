@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         numContainers: 4,
         numDropdowns: 6,
         theme: 'light',
+        designSystem: 'default',
         groups: {},
         settings: {},
         group_names: {}
@@ -75,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const numDropdownsInput = document.getElementById('setting-num-dropdowns');
 
     // Controller state elements
-    const refreshControllerBtn = document.getElementById('refresh-controller-btn');
     const slidersContainer = document.getElementById('sliders-container');
     const buttonsContainer = document.getElementById('buttons-container');
 
@@ -143,7 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Build the main UI structure
     function initializeUI() {
-        console.log(`Initializing UI: ${config.numContainers} groups, Theme: ${config.theme}`);
+        console.log(`Initializing UI: ${config.numContainers} groups, Theme: ${config.theme}, Design System: ${config.designSystem}`);
+        applyTheme(); // Ensure design system and theme are applied to the DOM
         createGroupContainers();
         createDropdowns();
         updateDropdownOptions();
@@ -165,14 +166,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (applySettingsBtn) applySettingsBtn.addEventListener('click', handleApplySettings); else console.error("#settings-apply-btn not found");
         if (recordKeyBtn) recordKeyBtn.addEventListener('click', toggleKeyRecording); else console.error("#record-key-btn not found");
         if (addBindingBtn) addBindingBtn.addEventListener('click', handleAddBinding); else console.error("#add-binding-btn not found");
-        if (refreshControllerBtn) refreshControllerBtn.addEventListener('click', fetchControllerState); else console.error("#refresh-controller-btn not found");
 
         // Add COM port refresh button listener
         const refreshComPortsBtn = document.getElementById('refresh-com-ports-btn');
         if (refreshComPortsBtn) refreshComPortsBtn.addEventListener('click', handleRefreshComPorts); else console.error("#refresh-com-ports-btn not found");
 
+        // Add controller toggle button listener
+        const toggleControllerBtn = document.getElementById('toggle-controller-btn');
+        if (toggleControllerBtn) {
+            toggleControllerBtn.addEventListener('click', toggleControllerContent);
+
+            // Check for saved collapsed state
+            const isCollapsed = localStorage.getItem('controllerCollapsed') === 'true';
+            if (isCollapsed) {
+                toggleControllerContent();
+            }
+        } else {
+            console.error("#toggle-controller-btn not found");
+        }
+
         document.addEventListener('keydown', handleGlobalKeyDown, true);
         console.log("Event listeners added.");
+    }
+
+    // Toggle controller content visibility
+    function toggleControllerContent() {
+        const toggleBtn = document.getElementById('toggle-controller-btn');
+        const controllerContent = document.getElementById('controller-content');
+        const controllerSection = document.getElementById('controller-section');
+
+        if (!toggleBtn || !controllerContent || !controllerSection) {
+            console.error("Toggle button, controller content, or controller section not found");
+            return;
+        }
+
+        const isCollapsed = controllerContent.classList.toggle('collapsed');
+        toggleBtn.classList.toggle('collapsed', isCollapsed);
+        controllerSection.classList.toggle('collapsed', isCollapsed);
+
+        // Update button text/icon
+        toggleBtn.textContent = isCollapsed ? '◀' : '▼';
+        toggleBtn.title = isCollapsed ? 'Expand Controller' : 'Collapse Controller';
+
+        // Save state to localStorage
+        localStorage.setItem('controllerCollapsed', isCollapsed.toString());
     }
 
     // --- Loading State Feedback ---
@@ -183,27 +220,49 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadPreferencesFromStorage() {
         const savedTheme = localStorage.getItem('appTheme');
         const savedNumGroups = localStorage.getItem('numGroups');
-        const savedNumDropdowns = localStorage.getItem('numDropdowns'); // <<< ADD loading for dropdowns
+        const savedNumDropdowns = localStorage.getItem('numDropdowns');
+        const savedDesignSystem = localStorage.getItem('designSystem');
 
         config.theme = savedTheme || 'light';
         config.numContainers = parseInt(savedNumGroups, 10) || config.numContainers; // Use initial default if not saved
-        config.numDropdowns = parseInt(savedNumDropdowns, 10) || config.numDropdowns; // <<< ADD parsing for dropdowns
+        config.numDropdowns = parseInt(savedNumDropdowns, 10) || config.numDropdowns;
+        config.designSystem = savedDesignSystem || 'default';
 
         // Validate ranges
         config.numContainers = Math.max(1, Math.min(10, config.numContainers));
-        config.numDropdowns = Math.max(0, Math.min(20, config.numDropdowns)); // <<< ADD validation for dropdowns
+        config.numDropdowns = Math.max(0, Math.min(20, config.numDropdowns));
 
-        console.log(`Preferences loaded: Theme=${config.theme}, Groups=${config.numContainers}, Dropdowns=${config.numDropdowns}`);
+        console.log(`Preferences loaded: Theme=${config.theme}, Groups=${config.numContainers}, Dropdowns=${config.numDropdowns}, DesignSystem=${config.designSystem}`);
     }
 
     function savePreferencesToStorage() {
         localStorage.setItem('appTheme', config.theme);
         localStorage.setItem('numGroups', config.numContainers.toString());
-        localStorage.setItem('numDropdowns', config.numDropdowns.toString()); // <<< ADD saving for dropdowns
-        console.log(`Preferences saved: Theme=${config.theme}, Groups=${config.numContainers}, Dropdowns=${config.numDropdowns}`);
+        localStorage.setItem('numDropdowns', config.numDropdowns.toString());
+        localStorage.setItem('designSystem', config.designSystem);
+        console.log(`Preferences saved: Theme=${config.theme}, Groups=${config.numContainers}, Dropdowns=${config.numDropdowns}, DesignSystem=${config.designSystem}`);
     }
 
-    function applyTheme() { if (config.theme === 'dark') bodyElement.classList.add('dark-theme'); else bodyElement.classList.remove('dark-theme'); if (darkThemeCheckbox) darkThemeCheckbox.checked = (config.theme === 'dark'); }
+    function applyTheme() {
+        // Apply dark theme if needed
+        if (config.theme === 'dark') {
+            bodyElement.classList.add('dark-theme');
+        } else {
+            bodyElement.classList.remove('dark-theme');
+        }
+
+        // Apply design system
+        bodyElement.classList.remove('material-you');
+        if (config.designSystem === 'material-you') {
+            bodyElement.classList.add('material-you');
+        }
+
+        // Update checkboxes/selects in settings if they exist
+        if (darkThemeCheckbox) darkThemeCheckbox.checked = (config.theme === 'dark');
+
+        const designSystemSelect = document.getElementById('setting-design-system');
+        if (designSystemSelect) designSystemSelect.value = config.designSystem;
+    }
 
     // --- Persistence (Backend Interaction) ---
     async function loadConfigFromServer() {
@@ -228,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loadedData.numContainers) config.numContainers = loadedData.numContainers;
                 if (loadedData.numDropdowns) config.numDropdowns = loadedData.numDropdowns;
                 if (loadedData.theme) config.theme = loadedData.theme;
+                if (loadedData.designSystem) config.designSystem = loadedData.designSystem;
                 console.log("Config loaded and applied:", config);
             }
         } catch (error) {
@@ -250,6 +310,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         config.group_names[groupKey] = groupKey;
                     }
                 });
+            }
+
+            // Ensure design system is set to a valid value
+            if (!config.designSystem) {
+                config.designSystem = 'default';
             }
 
             // Clean up any group_names entries for non-existent groups
@@ -407,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Settings Modal Logic ---
     function openSettingsModal() {
         // Ensure modal elements exist
-        if (!settingsModal || !numGroupsInput || !darkThemeCheckbox || !keyComboInput || !keyActionInput || !numDropdownsInput) { // <<< ADD check for numDropdownsInput
+        if (!settingsModal || !numGroupsInput || !darkThemeCheckbox || !keyComboInput || !keyActionInput || !numDropdownsInput) {
             showError("Cannot open settings: Modal elements not found.");
             return;
         }
@@ -415,12 +480,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Load current preferences into modal
         numGroupsInput.value = config.numContainers;
-        numDropdownsInput.value = config.numDropdowns; // <<< POPULATE dropdown input
+        numDropdownsInput.value = config.numDropdowns;
         darkThemeCheckbox.checked = (config.theme === 'dark');
+
+        // Set design system selection
+        const designSystemSelect = document.getElementById('setting-design-system');
+        if (designSystemSelect) {
+            designSystemSelect.value = config.designSystem || 'default';
+        }
 
         // Store initial counts to detect changes on Apply
         initialGroupCount = config.numContainers;
-        initialDropdownCount = config.numDropdowns; // <<< STORE initial dropdown count
+        initialDropdownCount = config.numDropdowns;
 
         // Hide warnings initially
         if (groupWarningText) groupWarningText.style.display = 'none';
@@ -444,8 +515,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Applying general settings...");
         // Read values from modal
         const newNumGroups = parseInt(numGroupsInput.value, 10);
-        const newNumDropdowns = parseInt(numDropdownsInput.value, 10); // <<< READ dropdown count
+        const newNumDropdowns = parseInt(numDropdownsInput.value, 10);
         const newTheme = darkThemeCheckbox.checked ? 'dark' : 'light';
+
+        // Get design system value
+        const designSystemSelect = document.getElementById('setting-design-system');
+        const newDesignSystem = designSystemSelect ? designSystemSelect.value : 'default';
 
         // Get the COM port selection
         const comPortSelect = document.getElementById('setting-com-port');
@@ -455,27 +530,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validate and Update Config State
         const validatedNumGroups = Math.max(1, Math.min(10, newNumGroups || config.numContainers));
-        const validatedNumDropdowns = Math.max(0, Math.min(20, newNumDropdowns || config.numDropdowns)); // <<< VALIDATE dropdown count
+        const validatedNumDropdowns = Math.max(0, Math.min(20, newNumDropdowns || config.numDropdowns));
         const groupsChanged = validatedNumGroups !== config.numContainers;
-        const dropdownsChanged = validatedNumDropdowns !== config.numDropdowns; // <<< CHECK if dropdown count changed
+        const dropdownsChanged = validatedNumDropdowns !== config.numDropdowns;
         const themeChanged = newTheme !== config.theme;
+        const designSystemChanged = newDesignSystem !== config.designSystem;
 
         config.numContainers = validatedNumGroups;
-        config.numDropdowns = validatedNumDropdowns; // <<< UPDATE config state
+        config.numDropdowns = validatedNumDropdowns;
         config.theme = newTheme;
+        config.designSystem = newDesignSystem;
 
         // Apply Changes & Save Preferences
-        if (themeChanged) applyTheme();
-        savePreferencesToStorage(); // Save theme, group count, AND dropdown count
+        if (themeChanged || designSystemChanged) applyTheme();
+        savePreferencesToStorage();
 
         // Rebuild UI sections ONLY if their counts changed
-        let configNeedsSave = false;
+        let configNeedsSave = true; // Always save config when applying settings
         if (groupsChanged) {
             console.warn("Group count changed, rebuilding groups and resetting placements.");
             config.groups = {}; // Reset group data in config state
             createGroupContainers(); // Rebuild group UI
             fetchApplicationsFromServer(); // Reset available apps list
-            configNeedsSave = true; // Mark config for saving
         }
         if (dropdownsChanged) {
             console.warn("Dropdown count changed, rebuilding action slots.");
@@ -493,12 +569,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             createDropdowns(); // Rebuild dropdown structure
             updateDropdownOptions(); // Repopulate options and apply selections
-            configNeedsSave = true; // Mark config for saving
         }
 
-        // Save config.json immediately if structure changed
+        // Save config.json immediately
         if (configNeedsSave) {
-            if (saveConfigToServer.flush) saveConfigToServer.flush(); else saveConfigToServer();
+            console.log("Saving theme and other changes to server");
+            if (saveConfigToServer.flush) {
+                saveConfigToServer.flush();
+            } else {
+                saveConfigToServer();
+            }
         }
 
         closeSettingsModal();

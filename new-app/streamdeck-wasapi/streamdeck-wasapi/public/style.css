@@ -1,45 +1,48 @@
 /* General Body and Layout */
 body {
-    font-family: sans-serif;
+    font-family: 'Segoe UI', sans-serif;
+    /* Windows 11 uses Segoe UI */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
-    /* Light background for the body */
+    background-color: #f2f2f2;
+    /* Windows 11 background color */
+    color: #202020;
 }
 
 .main-container {
     display: flex;
     flex-grow: 1;
-    /* Allows this container to fill vertical space */
     padding: 15px;
-    gap: 15px;
-    /* Space between sections */
+    gap: 20px;
+    /* Increased spacing */
     overflow: hidden;
-    /* Prevent potential overflow issues */
 }
 
 h2 {
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
     font-size: 1.1em;
-    color: #333;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #ccc;
+    color: #202020;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 500;
+    /* Windows 11 typically uses less bold headers */
 }
 
 /* Left Section: Available Apps */
 .available-apps {
-    border: 1px solid #ccc;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* Windows 11 uses more rounded corners */
     padding: 15px;
     width: 200px;
-    /* Fixed width for available apps list */
     display: flex;
     flex-direction: column;
-    /* Stack title and list vertically */
     background-color: #fff;
     overflow-y: auto;
-    /* Add scroll if apps overflow */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    /* Subtle shadow for depth */
 }
 
 .available-apps h2 {
@@ -92,24 +95,20 @@ h2 {
 }
 
 .group-box {
-    border: 1px dashed #aaa;
+    border: 1px solid #e0e0e0;
     background-color: #fff;
-    padding: 10px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    /* Stack title and apps vertically inside */
-    gap: 8px;
-    /* Space between title/apps within a group */
+    gap: 10px;
     flex-grow: 1;
-    /* Allow boxes to grow and fill wrapper height */
     flex-basis: 0;
-    /* Distribute space evenly */
     min-width: 150px;
-    /* Minimum width for a group box */
     transition: background-color 0.2s ease;
-    /* Feedback for dragover */
     overflow-y: auto;
-    /* Allow scrolling within a group box if needed */
+    border-radius: 8px;
+    /* Windows 11 rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .group-box.drag-over {
@@ -127,47 +126,70 @@ h2 {
     padding-bottom: 5px;
     flex-shrink: 0;
     /* Prevent title shrinking */
+    cursor: pointer;
+    /* Indicate clickable for renaming */
+    position: relative;
 }
 
-/* App Box Styling (used in both Available and Group lists) */
+.group-box h3:hover::after {
+    /* Optional: small edit hint on hover */
+    content: '✏️';
+    font-size: 0.7em;
+    position: absolute;
+    right: 0px;
+    top: 2px;
+    opacity: 0.6;
+}
+
+.group-title-input {
+    /* Style for the input field during rename */
+    width: 90%;
+    margin: 0 auto 10px auto;
+    /* Adjust position to match h3 */
+    padding: 4px;
+    font-size: 1em;
+    /* Match h3 font size */
+    text-align: center;
+    border: 1px solid #007bff;
+    box-sizing: border-box;
+}
+
+/* Windows 11 Style Updates */
 .app-box {
-    border: 1px solid #b8cde0;
-    background-color: #dbe9f5;
-    /* Slightly different color */
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
     padding: 8px 12px;
     cursor: grab;
-    /* Indicate it's draggable */
     user-select: none;
-    /* Prevent text selection during drag */
     text-align: center;
     white-space: nowrap;
-    /* Prevent name from wrapping */
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     font-size: 0.9em;
     flex-shrink: 0;
-    /* Prevent apps from shrinking weirdly */
+    border-radius: 6px;
+    /* Windows 11 style rounded corners */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .app-box:active,
 .app-box.dragging {
-    /* Style for dragging */
     cursor: grabbing;
-    background-color: #c4dcf0;
-    opacity: 0.7;
+    background-color: #f0f0f0;
+    opacity: 0.8;
 }
-
 
 /* Right Section: Dropdowns */
 .dropdown-section {
-    border: 1px solid #ccc;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
     padding: 15px;
-    width: 250px;
-    /* Adjusted width */
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    overflow-y: auto;
-    /* Scroll if dropdowns overflow */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    min-width: 400px;
+    /* Ensure dropdown section is wide enough */
+    flex: 1;
 }
 
 .dropdown-section h2 {
@@ -177,7 +199,7 @@ h2 {
 .dropdown-grid {
     display: grid;
     gap: 15px;
-    /* Space between dropdowns */
+    /* Space between dropd*/
     padding-top: 10px;
     /* Grid columns set by JS */
 }
@@ -191,12 +213,11 @@ h2 {
 }
 
 .dropdown-container select {
-    width: 100%;
-    padding: 6px;
-    box-sizing: border-box;
-    /* Include padding in width */
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 /* Controls Section */
@@ -245,21 +266,20 @@ h2 {
 
 /* Style for the fetch button */
 #fetch-apps-btn {
-    margin-bottom: 10px;
-    /* Space below the button */
-    padding: 6px 12px;
-    cursor: pointer;
-    background-color: #6c757d;
+    background-color: #0078d4;
+    /* Microsoft blue */
     color: white;
     border: none;
     border-radius: 4px;
+    padding: 8px 16px;
     font-size: 0.9em;
-    align-self: flex-start;
-    /* Align button to the left */
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 #fetch-apps-btn:hover {
-    background-color: #5a6268;
+    background-color: #106ebe;
 }
 
 /* Adjust available-apps section padding if needed */
@@ -320,17 +340,14 @@ h2 {
 }
 
 .modal-content {
-    background-color: var(--bg-color, #fff);
-    /* Use CSS variable for background */
-    color: var(--text-color, #333);
-    /* Use CSS variable for text */
-    padding: 25px 35px;
+    background-color: #fff;
+    padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
     width: 90%;
-    max-width: 450px;
-    position: relative;
-    border: 1px solid var(--border-color, #ccc);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
 }
 
 .modal-close-btn {
@@ -407,20 +424,20 @@ h2 {
 }
 
 #settings-apply-btn {
-    display: block;
-    width: 100%;
-    padding: 10px 15px;
-    background-color: var(--primary-color, #007bff);
+    padding: 10px 20px;
+    background-color: #0078d4;
+    /* Microsoft blue */
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 1em;
+    border-radius: 4px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    font-size: 1em;
+    transition: background-color 0.2s;
 }
 
 #settings-apply-btn:hover {
-    background-color: var(--primary-color-hover, #0056b3);
+    background-color: #106ebe;
 }
 
 /* Style for the settings gear button */
@@ -474,7 +491,7 @@ h2 {
 
 body.dark-theme {
     /* Define dark theme variables when .dark-theme is present */
-    --bg-color: #2c2c2c;
+    --bg-color: #202020;
     --bg-color-secondary: #3a3a3a;
     --bg-color-tertiary: #444444;
     --text-color: #e0e0e0;
@@ -487,8 +504,8 @@ body.dark-theme {
     --app-bg-color: #4a5a6a;
     --app-border-color: #6a7a8a;
     --app-dragging-bg-color: #5a6a7a;
-    --group-box-bg: #383838;
-    --group-box-border: #666666;
+    --group-box-bg: #2d2d2d;
+    --group-box-border: #3d3d3d;
     --group-box-drag-over-bg: #3a4a3a;
     --input-bg-color: #555555;
     --input-text-color: #e0e0e0;
@@ -1104,17 +1121,75 @@ h2 {
 
 /* Controller Status Section */
 .controller-section {
-    border: 1px solid #ccc;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* Windows 11 rounded corners */
     padding: 15px;
     width: 250px;
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    overflow-y: auto;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: width 0.3s ease, padding 0.3s ease;
 }
 
-.controller-section h2 {
-    flex-shrink: 0;
+.controller-section.collapsed {
+    width: 50px;
+    padding: 10px 5px;
+}
+
+.controller-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.controller-section.collapsed .controller-header h2 {
+    display: none;
+}
+
+.controller-header h2 {
+    margin: 0;
+    flex: 1;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    color: #555;
+    transition: transform 0.2s;
+    z-index: 1;
+}
+
+.toggle-btn.collapsed {
+    transform: rotate(0deg);
+}
+
+.controller-content {
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 1000px;
+    overflow: hidden;
+    opacity: 1;
+    width: 100%;
+}
+
+.controller-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.controller-section.collapsed .controller-display,
+.controller-section.collapsed .connection-status-container {
+    display: none;
 }
 
 .controller-display {
@@ -1126,17 +1201,20 @@ h2 {
 
 .sliders-display,
 .buttons-display {
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    border-radius: 8px;
+    /* Slightly larger radius for Windows 11 style */
+    background-color: #fafafa;
+    margin-bottom: 10px;
 }
 
 .sliders-display h3,
 .buttons-display h3 {
     margin: 0 0 10px 0;
     font-size: 1em;
-    color: #555;
-    border-bottom: 1px solid #eee;
+    color: #202020;
+    border-bottom: 1px solid #e0e0e0;
     padding-bottom: 5px;
 }
 
@@ -1169,15 +1247,17 @@ h2 {
 
 .slider-bar {
     flex-grow: 1;
-    height: 10px;
+    height: 6px;
+    /* Thinner bar for Windows 11 style */
     background-color: #e0e0e0;
-    border-radius: 5px;
+    border-radius: 3px;
     overflow: hidden;
 }
 
 .slider-fill {
     height: 100%;
-    background-color: #4CAF50;
+    background-color: #0078d4;
+    /* Microsoft blue */
     width: 0%;
 }
 
@@ -1186,26 +1266,32 @@ h2 {
     height: 20px;
     border-radius: 50%;
     background-color: #e0e0e0;
+    transition: background-color 0.2s;
 }
 
 .button-indicator.active {
-    background-color: #ff5722;
+    background-color: #0078d4;
+    /* Microsoft blue */
 }
 
 #refresh-controller-btn {
+    flex: 1;
     padding: 8px 12px;
-    background-color: #4CAF50;
+    background-color: #0078d4;
+    /* Microsoft blue */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
-    margin-bottom: 10px;
-    align-self: flex-start;
+    margin: 0;
+    /* Remove margin to align properly */
+    height: 34px;
+    /* Match connection status total height */
 }
 
 #refresh-controller-btn:hover {
-    background-color: #45a049;
+    background-color: #106ebe;
 }
 
 /* Dark theme for controller section */
@@ -1298,28 +1384,35 @@ body.dark-theme .settings-note {
     color: var(--text-color-light);
 }
 
-/* Connection status styles */
+/* Connection status styles - ALIGNMENT FIX */
 .connection-status-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
     margin-bottom: 15px;
 }
 
 #connection-status {
-    padding: 6px 10px;
+    flex: none;
+    padding: 8px 12px;
     border-radius: 4px;
     font-size: 0.9em;
-    font-weight: bold;
+    font-weight: 500;
+    /* Windows 11 style is less bold */
+    text-align: center;
+    width: 100%;
+    height: auto;
+    line-height: normal;
 }
 
 .status-connected {
-    background-color: #4CAF50;
+    background-color: #107c10;
+    /* Microsoft green */
     color: white;
 }
 
 .status-disconnected {
-    background-color: #f44336;
+    background-color: #d83b01;
+    /* Microsoft red/orange */
     color: white;
 }
 
@@ -1332,13 +1425,79 @@ body.dark-theme .settings-note {
 
 /* Dark theme support */
 body.dark-theme .status-connected {
-    background-color: #2e7d32;
+    background-color: #10793e;
 }
 
 body.dark-theme .status-disconnected {
-    background-color: #c62828;
+    background-color: #a83218;
 }
 
 body.dark-theme .no-connection-warning {
     color: #ff8a80;
+}
+
+/* Buttons styling for Windows 11 look */
+button {
+    border-radius: 4px;
+    border: 1px solid transparent;
+    padding: 8px 16px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Windows 11 default button */
+button.small-btn,
+#record-key-btn,
+#add-binding-btn {
+    background-color: #f0f0f0;
+    color: #000000;
+    border: 1px solid #e0e0e0;
+    padding: 6px 12px;
+}
+
+button.small-btn:hover,
+#record-key-btn:hover,
+#add-binding-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Dark mode button adjustments */
+body.dark-theme button.small-btn,
+body.dark-theme #record-key-btn,
+body.dark-theme #add-binding-btn {
+    background-color: #3d3d3d;
+    color: #ffffff;
+    border: 1px solid #505050;
+}
+
+body.dark-theme button.small-btn:hover,
+body.dark-theme #record-key-btn:hover,
+body.dark-theme #add-binding-btn:hover {
+    background-color: #505050;
+}
+
+/* Windows 11 style focus for inputs */
+input:focus,
+select:focus {
+    outline: 2px solid #0078d4;
+    outline-offset: 1px;
+}
+
+/* Improve input appearance */
+input[type="text"],
+input[type="number"] {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body.dark-theme input[type="text"],
+body.dark-theme input[type="number"] {
+    background-color: #3d3d3d;
+    border-color: #505050;
+    color: #f0f0f0;
 }

@@ -4,19 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Grouping UI</title>
+    <title>StreamDeck WASAPI Controller</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="material-you.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="main-container" id="main-container">
         <div class="available-apps" id="available-apps-section">
             <h2>Available Apps</h2>
-            <button id="fetch-apps-btn">Fetch Apps from Server</button>
+            <button id="fetch-apps-btn">Fetch Apps</button>
             <div class="app-list" id="app-list"></div>
         </div>
         <div class="group-containers-section" id="group-containers-section">
-            <h2>Groups (Double-click name to rename)</h2>
+            <h2>Groups (Double-click to rename)</h2>
             <div class="group-boxes-wrapper" id="group-boxes-wrapper"></div>
         </div>
         <div class="dropdown-section" id="dropdown-section">
@@ -24,21 +27,25 @@
             <div class="dropdown-grid" id="dropdown-grid"></div>
         </div>
 
-        <!-- New controller state section -->
+        <!-- Controller status section without refresh button -->
         <div class="controller-section" id="controller-section">
-            <h2>Controller Status</h2>
-            <div class="connection-status-container">
-                <div id="connection-status" class="status-disconnected">Not connected</div>
-                <button id="refresh-controller-btn">Refresh Status</button>
+            <div class="controller-header">
+                <h2>Controller Status</h2>
+                <button id="toggle-controller-btn" class="toggle-btn" title="Collapse Controller">▼</button>
             </div>
-            <div class="controller-display">
-                <div class="sliders-display">
-                    <h3>Sliders</h3>
-                    <div id="sliders-container" class="sliders-container"></div>
+            <div class="controller-content" id="controller-content">
+                <div class="connection-status-container">
+                    <div id="connection-status" class="status-disconnected">Not connected</div>
                 </div>
-                <div class="buttons-display">
-                    <h3>Buttons</h3>
-                    <div id="buttons-container" class="buttons-container"></div>
+                <div class="controller-display">
+                    <div class="sliders-display">
+                        <h3>Sliders</h3>
+                        <div id="sliders-container" class="sliders-container"></div>
+                    </div>
+                    <div class="buttons-display">
+                        <h3>Buttons</h3>
+                        <div id="buttons-container" class="buttons-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,6 +74,13 @@
                 <div class="setting-item">
                     <label for="setting-dark-theme">Dark Theme:</label>
                     <input type="checkbox" id="setting-dark-theme">
+                </div>
+                <div class="setting-item">
+                    <label for="setting-design-system">Design System:</label>
+                    <select id="setting-design-system">
+                        <option value="default">Windows 11 Style</option>
+                        <option value="material-you">Material You</option>
+                    </select>
                 </div>
                 <p class="settings-warning group-warning" style="display: none;">
                     Changing the number of groups will reset current app placements.
@@ -100,8 +114,8 @@
                         <button id="record-key-btn">Record</button>
                     </div>
                     <div class="setting-item">
-                        <label for="setting-key-action">Action Name:</label> <input type="text" id="setting-key-action"
-                            placeholder="Unique name, e.g., open_settings">
+                        <label for="setting-key-action">Action Name:</label>
+                        <input type="text" id="setting-key-action" placeholder="Unique name, e.g., open_settings">
                     </div>
                     <button id="add-binding-btn" class="small-btn">Add Binding</button>
                 </div>
