@@ -119,6 +119,10 @@
     transition: box-shadow var(--md-transition-standard);
 }
 
+.material.you div .dropdown-container select {
+    width: 100%;
+}
+
 .material-you .controller-section {
     background-color: var(--md-surface-variant);
 }

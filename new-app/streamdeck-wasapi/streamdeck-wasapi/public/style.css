@@ -9,6 +9,7 @@ body {
     background-color: #f2f2f2;
     /* Windows 11 background color */
     color: #202020;
+    max-height: 100vh;
 }
 
 .main-container {
@@ -43,6 +44,7 @@ h2 {
     overflow-y: auto;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     /* Subtle shadow for depth */
+    min-width: 150px;
 }
 
 .available-apps h2 {
@@ -187,7 +189,7 @@ h2 {
     flex-direction: column;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    min-width: 400px;
+    min-width: auto;
     /* Ensure dropdown section is wide enough */
     flex: 1;
 }
@@ -218,6 +220,8 @@ h2 {
     border: 1px solid #e0e0e0;
     background-color: #fafafa;
     font-family: 'Segoe UI', sans-serif;
+    width: 100%;
+    text-align: center;
 }
 
 /* Controls Section */
@@ -1135,7 +1139,7 @@ h2 {
 }
 
 .controller-section.collapsed {
-    width: 50px;
+    width: 2%;
     padding: 10px 5px;
 }
 

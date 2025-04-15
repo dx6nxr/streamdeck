@@ -206,7 +206,8 @@ body.windows-11 {
 .windows-11 .group-containers-section,
 .windows-11 .dropdown-section,
 .windows-11 .group-box,
-.windows-11 .modal-content {
+.windows-11 .modal-content,
+.windows-11 .controller-section {
     border: 1px solid var(--border-color-default);
     border-radius: var(--border-radius-medium);
     padding: 16px;
@@ -227,13 +228,12 @@ body.windows-11 {
 }
 
 .windows-11 .available-apps {
-    width: 220px;
+    min-width: 150px;
     /* Slightly wider */
-    flex-shrink: 0;
 }
 
 .windows-11 .dropdown-section {
-    min-width: 350px;
+    /*min-width: 350px; */
     /* Adjust width as needed */
     flex: 1;
 }
@@ -444,7 +444,6 @@ body.windows-11.dark-theme .controller-section {
     color: var(--text-color-primary);
     border: 1px solid var(--border-color-default);
     border-radius: var(--border-radius-medium);
-    padding: 8px 12px;
     font-family: var(--font-family);
     font-size: 0.9em;
 }

@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         controllerSection.classList.toggle('collapsed', isCollapsed);
 
         // Update button text/icon
-        toggleBtn.textContent = isCollapsed ? '◀' : '▼';
+        toggleBtn.textContent = isCollapsed ? '◀' : '▶';
         toggleBtn.title = isCollapsed ? 'Expand Controller' : 'Collapse Controller';
 
         // Save state to localStorage
@@ -758,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const numDropdownsToCreate = config.numDropdowns; // <<< Use config value
         // Adjust grid columns dynamically (simple example: always 2 columns)
         const gridColumns = 2; // Or calculate based on numDropdownsToCreate if desired
-        dropdownGridDiv.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
+        dropdownGridDiv.style.gridTemplateColumns = `repeat(auto-fit, minmax(150px, 1fr))`;
         console.log(`Creating ${numDropdownsToCreate} dropdowns.`);
 
         for (let i = 1; i <= numDropdownsToCreate; i++) {
