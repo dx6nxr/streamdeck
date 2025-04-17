@@ -12,6 +12,8 @@
 #include "backend_logic.hpp"
 #include "arduino_bridge.h"
 #include <algorithm> 
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #define MAX_LOADSTRING 100
 #define SAFE_RELEASE(ptr) if(ptr){(ptr)->Release(); ptr = nullptr;}
@@ -78,6 +80,10 @@ void StartArduinoMonitor();
 void ProcessArduinoData();
 void ApplyVolumeToGroup(const std::string& group_name, float volume);
 void HandleButtonPress(int button_index);
+
+// Add this constant near other constants at the top
+const std::string SHADCN_UI_PATH = "./shadcn-ui/.next/static";
+const std::string SHADCN_UI_SERVER_PATH = "/static";
 
 // Function to clamp a value between min and max
 template <typename T>
@@ -148,7 +154,58 @@ void StartWebServer()
         addCorsHeaders(res);
         res.code = 204;
         res.end();
-        };
+    };
+
+    // --- Static file handler for shadcn UI ---
+    CROW_ROUTE(g_crow_app, "/")
+    ([](const crow::request& /*req*/, crow::response& res) {
+        // Serve index.html or redirect to the UI
+        res.redirect("/ui");
+        return;
+    });
+
+    // Serve the shadcn UI
+    CROW_ROUTE(g_crow_app, "/ui")
+    ([](const crow::request& /*req*/, crow::response& res) {
+        std::string html = R"(
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamDeck WASAPI Controller</title>
+    <script>
+        window.location.href = "http://localhost:3000";
+    </script>
+</head>
+<body>
+    <h1>Redirecting to UI...</h1>
+    <p>If you are not redirected automatically, <a href="http://localhost:3000">click here</a>.</p>
+    <p>Make sure the UI is running with: npm run dev (from the shadcn-ui directory)</p>
+</body>
+</html>
+        )";
+        
+        res.add_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
+
+    // Serve static files from shadcn UI build directory
+    CROW_ROUTE(g_crow_app, SHADCN_UI_SERVER_PATH + "(.*)")
+    ([](const crow::request& req, crow::response& res, const std::string& filename) {
+        std::string filepath = SHADCN_UI_PATH + filename;
+        
+        auto fileContent = readFileContent(filepath);
+        if (fileContent) {
+            res.add_header("Content-Type", getMimeType(filepath));
+            res.write(*fileContent);
+            res.end();
+        } else {
+            res.code = 404;
+            res.end();
+        }
+    });
 
     // Define OPTIONS routes
     CROW_ROUTE(g_crow_app, "/api/save-config").methods("OPTIONS"_method)(options_handler);
@@ -353,7 +410,7 @@ void StartWebServer()
         res.end();
             });
 
-    // GET /api/get-controller-state
+    // GET /api/get-controller-state - Update to match the new UI's expected format
     CROW_ROUTE(g_crow_app, "/api/get-controller-state").methods("GET"_method)
         ([](const crow::request& /*req*/, crow::response& res) {
         // std::cout << "API: GET /api/get-controller-state" << std::endl;
@@ -366,12 +423,22 @@ void StartWebServer()
             json sliders = json::array();
             json buttons = json::array();
             
-            for (int value : g_slider_values) {
-                sliders.push_back(value);
+            // Format sliders for the shadcn UI
+            for (size_t i = 0; i < g_slider_values.size(); i++) {
+                sliders.push_back({
+                    {"id", static_cast<int>(i) + 1},
+                    {"value", g_slider_values[i]},
+                    {"label", "Slider " + std::to_string(i + 1)}
+                });
             }
             
-            for (int state : g_button_states) {
-                buttons.push_back(state);
+            // Format buttons for the shadcn UI
+            for (size_t i = 0; i < g_button_states.size(); i++) {
+                buttons.push_back({
+                    {"id", static_cast<int>(i) + 1},
+                    {"pressed", g_button_states[i] > 0},
+                    {"label", "Button " + std::to_string(i + 1)}
+                });
             }
             
             state_data["sliders"] = sliders;
@@ -384,9 +451,9 @@ void StartWebServer()
         res.add_header("Content-Type", "application/json");
         res.write(state_data.dump());
         res.end();
-            });
+    });
 
-    // GET /api/get-com-ports
+    // GET /api/get-com-ports - Update to match the new UI's expected format
     CROW_ROUTE(g_crow_app, "/api/get-com-ports").methods("GET"_method)
         ([](const crow::request& /*req*/, crow::response& res) {
         std::cout << "API: GET /api/get-com-ports" << std::endl;
@@ -394,16 +461,11 @@ void StartWebServer()
         // Get list of available COM ports
         std::vector<std::string> comPorts = GetAvailableCOMPorts();
         
-        // Add currently selected port to the response
-        json response = json::object();
-        response["ports"] = comPorts;
-        response["selected"] = SERIAL_PORT_NAME;
-        
         addCorsHeaders(res);
         res.add_header("Content-Type", "application/json");
-        res.write(response.dump());
+        res.write(json(comPorts).dump());  // Just return the array directly
         res.end();
-            });
+    });
 
     // POST /api/set-com-port
     CROW_ROUTE(g_crow_app, "/api/set-com-port").methods("POST"_method)
@@ -624,18 +686,6 @@ void StartWebServer()
     });
 
     // Static file routes
-    CROW_ROUTE(g_crow_app, "/")([]() {
-        auto result = readFileContent("public/index.html");
-        if (result.has_value()) {
-            crow::response res;
-            addCorsHeaders(res);
-            res.add_header("Content-Type", getMimeType("public/index.html"));
-            res.write(result.value());
-            return res;
-        }
-        return crow::response(404, "Not Found: index.html");
-        });
-
     CROW_ROUTE(g_crow_app, "/style.css")([]() {
         auto result = readFileContent("public/style.css");
         if (result.has_value()) {
