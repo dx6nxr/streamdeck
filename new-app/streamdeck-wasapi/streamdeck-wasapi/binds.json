@@ -1,1 +1,34 @@
-[]
+[
+    {
+        "action": "Copy",
+        "combo": "Ctrl+C"
+    },
+    {
+        "action": "paste",
+        "combo": "Ctrl+V"
+    },
+    {
+        "action": "Play/Pause",
+        "combo": "Media_PlayPause"
+    },
+    {
+        "action": "Next Track",
+        "combo": "Media_NextTrack"
+    },
+    {
+        "action": "Previous Track",
+        "combo": "Media_PrevTrack"
+    },
+    {
+        "action": "Volume Up",
+        "combo": "Media_VolumeUp"
+    },
+    {
+        "action": "Volume Down",
+        "combo": "Media_VolumeDown"
+    },
+    {
+        "action": "Mute",
+        "combo": "Media_VolumeMute"
+    }
+]

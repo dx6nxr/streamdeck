@@ -31,14 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Debounce function
     function debounce(func, wait) {
         let timeout;
-        return function executedFunction(...args) {
+        const debounced = function (...args) {
+            const context = this;
             const later = () => {
-                clearTimeout(timeout);
-                func(...args);
+                timeout = null;
+                func.apply(context, args);
             };
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+        debounced.flush = () => {
+            clearTimeout(timeout);
+            func.apply(this);
+        };
+        return debounced;
     }
 
     // --- Backend API URLs ---
@@ -287,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 config.settings = (typeof loadedData.settings === 'object' && loadedData.settings !== null) ? loadedData.settings : {};
                 // Load group_names from the server response
                 config.group_names = (typeof loadedData.group_names === 'object' && loadedData.group_names !== null) ? loadedData.group_names : {};
+                config.buttonBindings = (typeof loadedData.buttonBindings === 'object' && loadedData.buttonBindings !== null) ? loadedData.buttonBindings : {};
                 // Add other fields that might be in config
                 if (loadedData.numContainers) config.numContainers = loadedData.numContainers;
                 if (loadedData.numDropdowns) config.numDropdowns = loadedData.numDropdowns;
@@ -304,6 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Saving config to server...");
         showLoadingState("Saving...");
 
+        // Sync UI state to config object before saving
+        updateCurrentConfigFromUI();
+
         try {
             // Make sure group_names is initialized if it doesn't exist
             if (!config.group_names) {
@@ -315,6 +325,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
+
+            // Create buttonBindings from settings
+            config.buttonBindings = {};
+            if (config.settings) {
+                console.log("Creating buttonBindings from settings:", JSON.stringify(config.settings));
+                console.log("Using currentBindings:", JSON.stringify(currentBindings));
+                Object.keys(config.settings).forEach(settingKey => {
+                    const bindingId = config.settings[settingKey];
+                    if (bindingId) { // Check for non-empty string
+                        const binding = currentBindings.find(b => b.id === bindingId);
+                        if (binding) {
+                            // settingKey is "setting-1", "setting-2", etc.
+                            const buttonIndex = parseInt(settingKey.split('-')[1], 10) - 1;
+                            if (!isNaN(buttonIndex)) {
+                                console.log(`Mapping buttonIndex ${buttonIndex} to action '${binding.action}'`);
+                                config.buttonBindings[`button${buttonIndex}`] = binding.action;
+                            }
+                        } else {
+                            console.warn(`Binding ID '${bindingId}' from settings not found in currentBindings.`);
+                        }
+                    }
+                });
+            }
+            console.log("Final buttonBindings:", JSON.stringify(config.buttonBindings));
 
             // Ensure design system is set to a valid value
             if (!config.designSystem) {
@@ -355,11 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const newGroups = {};
         groupBoxesWrapperDiv.querySelectorAll('.group-box').forEach(box => {
-            const titleElement = box.querySelector('h3');
-            if (!titleElement) return;
-
-            const groupName = titleElement.textContent;
-            if (!groupName) return;
+            const groupKey = box.dataset.groupKey; // Use the key, not the display name
+            if (!groupKey) return;
 
             const appsInGroup = [];
             box.querySelectorAll('.app-box').forEach(appBox => {
@@ -368,9 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Only add groups with valid names
-            if (groupName.trim() !== '') {
-                newGroups[groupName] = appsInGroup;
+            // Only add groups with valid keys
+            if (groupKey.trim() !== '') {
+                newGroups[groupKey] = appsInGroup;
             }
         });
 
@@ -387,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         config.settings = newSettings;
 
         // For debugging - show the current config in the status area
-        console.log("Updated config:", config);
+        console.log("Updated config from UI:", config);
     }
     async function loadBindsFromServer() {
         console.log("Loading bindings from server...");
@@ -407,8 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error ${response.status}`);
             }
             const data = await response.json();
-            comPorts = data.ports || [];
-            selectedComPort = data.selected || "";
+            comPorts = data || []; // Ensure comPorts is always an array
             console.log("COM ports loaded:", comPorts);
             console.log("Selected COM port:", selectedComPort);
         } catch (error) {
@@ -578,11 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Save config.json immediately
         if (configNeedsSave) {
             console.log("Saving theme and other changes to server");
-            if (saveConfigToServer.flush) {
-                saveConfigToServer.flush();
-            } else {
-                saveConfigToServer();
-            }
+            saveConfigToServer.flush();
         }
 
         closeSettingsModal();
@@ -768,7 +794,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const label = document.createElement('label');
             label.setAttribute('for', `dropdown-${i}`);
-            label.textContent = `Action Slot ${i}:`;
+            label.textContent = `Button ${i} Action:`;
             container.appendChild(label);
 
             const select = document.createElement('select');
@@ -944,6 +970,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
+    // --- Button Binding Change Handler ---
+    function handleButtonBindingChange(event) {
+        const select = event.target;
+        const buttonIndex = select.dataset.buttonIndex;
+        const actionName = select.value;
+        const buttonKey = `button${buttonIndex}`;
+
+        if (!config.buttonBindings) {
+            config.buttonBindings = {};
+        }
+
+        console.log(`Binding button ${buttonIndex} to action: ${actionName}`);
+
+        if (actionName === '__none__') {
+            delete config.buttonBindings[buttonKey];
+        } else {
+            config.buttonBindings[buttonKey] = actionName;
+        }
+
+        // Save the entire config
+        saveConfigToServer();
+    }
+
     // --- Controller State Management ---
     async function fetchControllerState() {
         try {
@@ -997,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create slider items
         if (controllerState.sliders && controllerState.sliders.length > 0) {
-            controllerState.sliders.forEach((value, index) => {
+            controllerState.sliders.forEach((data, index) => {
                 const sliderItem = document.createElement('div');
                 sliderItem.classList.add('slider-item');
 
@@ -1007,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const valueDisplay = document.createElement('div');
                 valueDisplay.classList.add('slider-value');
-                valueDisplay.textContent = value;
+                valueDisplay.textContent = data.value;
 
                 const bar = document.createElement('div');
                 bar.classList.add('slider-bar');
@@ -1015,7 +1064,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fill = document.createElement('div');
                 fill.classList.add('slider-fill');
                 // Set width based on slider value (0-1023)
-                const percentage = (value / 1023) * 100;
+                const percentage = (data.value / 1023) * 100;
+                console.log(`Slider ${index + 1} value: ${data.value}, percentage: ${percentage}%`);
                 fill.style.width = `${percentage}%`;
 
                 bar.appendChild(fill);
@@ -1032,27 +1082,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create button items
         if (controllerState.buttons && controllerState.buttons.length > 0) {
-            controllerState.buttons.forEach((state, index) => {
+            controllerState.buttons.forEach((button, index) => {
                 const buttonItem = document.createElement('div');
                 buttonItem.classList.add('button-item');
 
                 const label = document.createElement('div');
                 label.classList.add('button-label');
-                label.textContent = `Button ${index + 1}`;
+                label.textContent = button.label || `Button ${index + 1}`;
 
                 const indicator = document.createElement('div');
                 indicator.classList.add('button-indicator');
-                if (state === 1) {
+                if (button.pressed) {
                     indicator.classList.add('active');
                 }
 
-                const valueDisplay = document.createElement('div');
-                valueDisplay.classList.add('button-value');
-                valueDisplay.textContent = state === 1 ? 'ON' : 'OFF';
+                // Display the bound action name
+                const actionDisplay = document.createElement('div');
+                actionDisplay.classList.add('button-action-display');
+                const buttonKey = `button${index}`;
+                let actionName = '';
+                if (config.buttonBindings && config.buttonBindings[buttonKey]) {
+                    actionName = config.buttonBindings[buttonKey];
+                }
+                actionDisplay.textContent = actionName || 'No Action';
 
                 buttonItem.appendChild(label);
                 buttonItem.appendChild(indicator);
-                buttonItem.appendChild(valueDisplay);
+                buttonItem.appendChild(actionDisplay);
 
                 buttonsContainer.appendChild(buttonItem);
             });

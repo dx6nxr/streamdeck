@@ -1,19 +1,44 @@
 {
+    "buttonBindings": {},
     "designSystem": "material-you",
     "group_names": {
         "Group 1": "Media",
-        "Group 2": "Game",
+        "Group 2": "Games",
         "Group 3": "Chat",
-        "Group 4": "Other"
+        "Group 4": "Group 4"
     },
     "groups": {
         "Group 1": [
+            "cef_browser_process.exe",
+            "brave.exe",
+            "mstsc.exe",
             "Spotify.exe",
-            "brave.exe"
+            "Microsoft.Media.Player.exe"
         ],
-        "Group 2": [],
-        "Group 3": [],
-        "Group 4": []
+        "Group 2": [
+            "steam.exe",
+            "WorldOfTanks.exe",
+            "cs2.exe",
+            "steamwebhelper.exe",
+            "PummelParty.exe",
+            "NMS.exe",
+            "REPO.exe",
+            "ItTakesTwo.exe",
+            "bfv.exe",
+            "Balatro.exe",
+            "RainbowSix.exe",
+            "R6-Extraction_Plus.exe"
+        ],
+        "Group 3": [
+            "Telegram.exe",
+            "ms-teams.exe",
+            "msedgewebview2.exe",
+            "WhatsApp.exe",
+            "Discord.exe"
+        ],
+        "Group 4": [
+            "Unknown Session"
+        ]
     },
     "numContainers": 4,
     "numDropdowns": 8,
