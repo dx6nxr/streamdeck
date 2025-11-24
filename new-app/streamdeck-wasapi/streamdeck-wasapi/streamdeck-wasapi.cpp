@@ -1115,7 +1115,9 @@ void ApplyVolumeToGroup(const std::string &group_name, float volume)
 
                 // Debug output of current audio sessions
                 std::cerr << "Current audio sessions:" << std::endl;
-                std::vector<std::wstring> appNames = GetApplicationNames();
+                RefreshAudioSessions();
+                std::vector<std::wstring>
+                    appNames = GetApplicationNames();
                 for (size_t i = 0; i < appNames.size(); ++i)
                 {
                     std::cerr << "  " << i << ": \"" << ws2s(appNames[i]) << "\"" << std::endl;
